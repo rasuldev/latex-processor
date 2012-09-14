@@ -1,0 +1,7 @@
+*.exe
+*/bin/
+*/obj/
+_ReSharper.*/
+*.user
+*.suo
+*.psess
