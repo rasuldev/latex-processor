@@ -1,0 +1,19 @@
+﻿\begin{document}
+Введение
+$$
+
+\int\sum 
+\eqno  {33.2}
+$$
+Отсюда видно, что
+$$
+
+\int\sum \eqno { 3.24 }
+$$
+Оттуда тоже видно
+$$
+
+\int\sum \eqno {33 }
+$$
+
+\end{document}
