@@ -9,7 +9,10 @@ namespace TextProcessor
     {
         static void Main(string[] args)
         {
-            ProcessFile(@"..\..\test.txt",@"..\..\test_processed.txt");
+            // Choose encoding of your file: default is UTF-8
+            // var encoding = Encoding.GetEncoding("windows-1251");
+            var encoding = Encoding.GetEncoding("utf-8");
+            ProcessFile(@"..\..\test.txt", @"..\..\test_processed.txt",encoding);
         }
 
         /// <summary>
@@ -18,9 +21,11 @@ namespace TextProcessor
         /// </summary>
         /// <param name="sourceFilename">File to be processed</param>
         /// <param name="destinationFilename">Result will be saved in this file</param>
-        static void ProcessFile(string sourceFilename, string destinationFilename)
+        static void ProcessFile(string sourceFilename, string destinationFilename, Encoding encoding = null)
         {
-            var str = File.ReadAllText(sourceFilename);
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+            var str = File.ReadAllText(sourceFilename, encoding);
             var sb = new StringBuilder(str);
 
             // Find all occurrences of eqno and extract number
@@ -39,7 +44,7 @@ namespace TextProcessor
                 sb = sb.Replace("$$", @"\begin{equation}\label{" + match.Groups[1].Value.Trim() + "}", beginDollarsPos, 2);
             }
 
-            File.WriteAllText(destinationFilename,sb.ToString());
+            File.WriteAllText(destinationFilename, sb.ToString(), encoding);
         }
     }
 }
