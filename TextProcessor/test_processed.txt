@@ -1,4 +1,4 @@
-\begin{document}
+﻿\begin{document}
 Введение
 \begin{equation}\label{33.2}
 
@@ -15,5 +15,9 @@
 
 \int\sum 
 \end{equation}
+
+Из формулы \eqref{3.24} 
+Из формулы \eqref{33} 
+Из формулы \eqref{33.2} 
 
 \end{document}
