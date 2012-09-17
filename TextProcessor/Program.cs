@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,7 +31,7 @@ namespace TextProcessor
             var sb = new StringBuilder(str);
 
             // Find all occurrences of eqno and extract number
-            var matches = Regex.Matches(str, @"\\eqno *\((.+)\)");
+            var matches = Regex.Matches(str, @"\\eqno(?:.|\r?\n)*?\((.+?)\)");
 
             // In eqNumbers we will collect equation numbers
             // It will be used to change formula references from (52.1) to \eqref{52.1}
@@ -39,7 +40,7 @@ namespace TextProcessor
             // Process matches (to avoid changing matching positions during replace we do processing from end to begin) 
             foreach (Match match in matches.OfType<Match>().OrderByDescending(m => m.Index))
             {
-                //Console.WriteLine("{0}({1})", match.Groups[1].Value.Trim(), match.Index);
+                Console.WriteLine("{0}({1})", match.Groups[1].Value.Trim(), match.Index);
 
                 int endDollarsPos = sb.ToString().IndexOf("$$", match.Index);
                 sb = sb.Replace("$$", @"\end{equation}", endDollarsPos, 2);
@@ -58,6 +59,11 @@ namespace TextProcessor
             {
                 text = Regex.Replace(text, string.Format(@"\(\s*{0}\s*\)", eqNumber), @"\eqref{"+eqNumber+"}");
             }
+
+            // Removing redundant newlines before \end{equation}
+            text = Regex.Replace(text, @"(\r?\n){2,}\\end{equation}", "\r\n\\end{equation}");
+            // Removing redundant newlines after \begin{equation}
+            text = Regex.Replace(text, @"\\begin{equation}(?<label>\\label{.*?})?(\r?\n){2,}", "\\begin{equation}${label}\r\n");
 
             File.WriteAllText(destinationFilename, text, encoding);
         }

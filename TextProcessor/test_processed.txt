@@ -1,20 +1,19 @@
 ﻿\begin{document}
 Введение
 \begin{equation}\label{33.2}
-
 \int\sum 
-
 \end{equation}
 Отсюда видно, что
 \begin{equation}\label{3.24}
-
-\int\sum 
+\int\sum  
 \end{equation}
 Оттуда тоже видно
 \begin{equation}\label{33}
-
 \int\sum 
 \end{equation}
+
+\begin{equation}
+sdsd
 
 Из формулы \eqref{3.24} 
 Из формулы \eqref{33} 
