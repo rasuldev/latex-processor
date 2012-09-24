@@ -57,7 +57,14 @@ namespace TextProcessor
             string text = sb.ToString();
             
             // Splitting into fragments: fragments with even indices are outside of math area
-            string[] textFragments = Regex.Split(text, @"(?=\$|\\begin{equation}|\\end{equation})");
+            string[] textFragments = Regex.Split(text, @"(?=\$\$|[^\$]\$[^\$])|(?=\\begin{equation}|\\end{equation})");
+            
+            // Test 
+            var text2 = string.Join("", textFragments);
+            if (text==text2)
+            {
+                Console.Write("");
+            }
 
             foreach (var eqNumber in eqNumbers)
             {
@@ -72,9 +79,9 @@ namespace TextProcessor
             text = string.Join("", textFragments);
 
             // Removing redundant newlines before \end{equation}
-            text = Regex.Replace(text, @"(\r?\n){2,}\\end{equation}", "\r\n\\end{equation}");
+            text = Regex.Replace(text, @"(\r?\n\s*){2,}\\end{equation}", "\r\n\\end{equation}");
             // Removing redundant newlines after \begin{equation}
-            text = Regex.Replace(text, @"\\begin{equation}(?<label>\\label{.*?})?(\r?\n){2,}", "\\begin{equation}${label}\r\n");
+            text = Regex.Replace(text, @"\\begin{equation}(?<label>\\label{.*?})?(\r?\n\s*){2,}", "\\begin{equation}${label}\r\n");
 
             File.WriteAllText(destinationFilename, text, encoding);
         }
