@@ -14,9 +14,10 @@
 
 \begin{equation}
 sdsd
+\end{equation}
 
 Из формулы \eqref{3.24} 
 Из формулы \eqref{33} 
-Из формулы \eqref{33.2} 
+Из формулы \eqref{33.2} видно, что $f(33.2) $
 
 \end{document}

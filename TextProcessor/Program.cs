@@ -55,10 +55,21 @@ namespace TextProcessor
 
             // Changing formula references
             string text = sb.ToString();
+            
+            // Splitting into fragments: fragments with even indices are outside of math area
+            string[] textFragments = Regex.Split(text, @"(?=\$|\\begin{equation}|\\end{equation})");
+
             foreach (var eqNumber in eqNumbers)
             {
-                text = Regex.Replace(text, string.Format(@"\(\s*{0}\s*\)", eqNumber), @"\eqref{"+eqNumber+"}");
+                // Processing only even fragments
+                for (int i = 0; i < textFragments.Length; i += 2)
+                {
+                    // fragment = textFragments[i];
+                    textFragments[i] = Regex.Replace(textFragments[i], string.Format(@"\(\s*{0}\s*\)", eqNumber), @"\eqref{" + eqNumber + "}");
+                }
             }
+            // Join fragments 
+            text = string.Join("", textFragments);
 
             // Removing redundant newlines before \end{equation}
             text = Regex.Replace(text, @"(\r?\n){2,}\\end{equation}", "\r\n\\end{equation}");
