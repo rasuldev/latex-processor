@@ -12,10 +12,14 @@ namespace TextProcessor
     {
         static void Main(string[] args)
         {
+
             Process2(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\processing\Magomed-Kasumov — копия.tex",
                 @"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\processing\Magomed-Kasumov.tex",
                 Encoding.GetEncoding("windows-1251"));
 
+            //Process2(@"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG.tex",
+            //         @"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG_p.tex",
+            //    Encoding.GetEncoding("windows-1251"));
 
 
 
@@ -41,7 +45,7 @@ namespace TextProcessor
             macros.ApplyMacros(ref sb);
 
             // equation labels renaming
-            Utils.RenameLabels(ref sb,"mmg_#name#_#num#");
+            Utils.RenameLabels(ref sb,"iish_gga_#num#");
             
             File.WriteAllText(destinationFilename, sb.ToString(), encoding);
         }

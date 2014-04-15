@@ -12,7 +12,32 @@ namespace TextProcessor.Latex
     {
         public static TextBlock GetEnvironmentName(string text, int pos)
         {
-            var envStartPos = text.LastIndexOf(@"\begin", pos, System.StringComparison.Ordinal);
+            // find enclosed \begin: 
+            // we must take into account cases when environment contains other environments
+            int envStartPos, envEndPos;
+            Stack<int> envStack = new Stack<int>();
+            while (true)
+            {
+                // on every iteration we find closest environment bound item (\begin or \end)
+                envStartPos = text.LastIndexOf(@"\begin", pos, System.StringComparison.Ordinal);
+                envEndPos = text.LastIndexOf(@"\end", pos, System.StringComparison.Ordinal);
+                if (envEndPos > envStartPos)
+                {
+                    // if closest bound item was \end then it means that we found inner environment
+                    // \b....\b...\e....<pos>...
+                    envStack.Push(1);
+                    // move to found bound item
+                    pos = envEndPos;
+                }
+                else
+                {
+                    if (envStack.Count == 0)
+                        break;
+                    pos = envStartPos;
+                    envStack.Pop();
+                }
+            }
+            
             var envNameStartPos = text.IndexOf('{', envStartPos);
             var envNameEndPos = text.IndexOf('}', envNameStartPos);
             return new TextBlock(envNameStartPos+1,

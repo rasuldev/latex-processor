@@ -25,6 +25,36 @@ namespace Tests
 
 
         [Test]
+        public void GetEnvironmentWithInnerTest()
+        {
+            string text =
+@"\begin{equation*}
+\begin{env1}text\end{env1}
+\begin{env2}
+    text
+    \begin{env3}
+        text
+    \end{env3}
+    text
+\end{env2}      
+\|f\|_{p(\cdot),w} \le r_{p,q}^w \|f\|_{q(\cdot),w},
+\end{equation*}";
+            string actual = Utils.GetEnvironmentName(text, 150).Content;
+            string expected = "equation*";
+            Assert.AreEqual(expected, actual);
+
+            actual = Utils.GetEnvironmentName(text, 123).Content;
+            expected = "env2";
+            Assert.AreEqual(expected, actual);
+
+            actual = Utils.GetEnvironmentName(text, 97).Content;
+            expected = "env3";
+            Assert.AreEqual(expected, actual);
+
+        }
+
+
+        [Test]
         public void GetLabelsTest()
         {
             string text =
