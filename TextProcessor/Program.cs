@@ -45,7 +45,7 @@ namespace TextProcessor
             macros.ApplyMacros(ref sb);
 
             // equation labels renaming
-            Utils.RenameLabels(ref sb,"iish_gga_#num#");
+            Utils.RenameLabels(ref sb,"mmg_#name#_#num#");
             
             File.WriteAllText(destinationFilename, sb.ToString(), encoding);
         }

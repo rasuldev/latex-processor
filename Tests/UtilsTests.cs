@@ -32,6 +32,7 @@ namespace Tests
 \begin{env1}text\end{env1}
 \begin{env2}
     text
+    %\begin{envCommented}
     \begin{env3}
         text
     \end{env3}
@@ -39,15 +40,15 @@ namespace Tests
 \end{env2}      
 \|f\|_{p(\cdot),w} \le r_{p,q}^w \|f\|_{q(\cdot),w},
 \end{equation*}";
-            string actual = Utils.GetEnvironmentName(text, 150).Content;
+            string actual = Utils.GetEnvironmentName(text, 181).Content;
             string expected = "equation*";
             Assert.AreEqual(expected, actual);
 
-            actual = Utils.GetEnvironmentName(text, 123).Content;
+            actual = Utils.GetEnvironmentName(text, 151).Content;
             expected = "env2";
             Assert.AreEqual(expected, actual);
 
-            actual = Utils.GetEnvironmentName(text, 97).Content;
+            actual = Utils.GetEnvironmentName(text, 125).Content;
             expected = "env3";
             Assert.AreEqual(expected, actual);
 

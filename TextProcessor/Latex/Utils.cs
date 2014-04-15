@@ -10,6 +10,22 @@ namespace TextProcessor.Latex
 {
     public class Utils
     {
+        //public static IList<Environment> GetEnvironments(string text)
+        //{
+        //    //
+
+        //    Dictionary<string,Stack<int>> stacks = new Dictionary<string, Stack<int>>();
+
+        //}
+
+
+
+        //public static int Find
+        public static int FindClosingTag(string text, int start, string openTag, string closeTag)
+        {
+            text.IndexOf("sss");
+        }
+
         public static TextBlock GetEnvironmentName(string text, int pos)
         {
             // find enclosed \begin: 
@@ -23,17 +39,24 @@ namespace TextProcessor.Latex
                 envEndPos = text.LastIndexOf(@"\end", pos, System.StringComparison.Ordinal);
                 if (envEndPos > envStartPos)
                 {
+                    // move to found bound item
+                    pos = envEndPos;
+                    // if it is a comment do nothing and go to the next iteration
+                    if (IsComment(text,pos))
+                        continue;
+
                     // if closest bound item was \end then it means that we found inner environment
                     // \b....\b...\e....<pos>...
                     envStack.Push(1);
-                    // move to found bound item
-                    pos = envEndPos;
                 }
                 else
                 {
+                    pos = envStartPos;
+                    if (IsComment(text, pos))
+                        continue;
+
                     if (envStack.Count == 0)
                         break;
-                    pos = envStartPos;
                     envStack.Pop();
                 }
             }
@@ -50,6 +73,8 @@ namespace TextProcessor.Latex
             var matches = Regex.Matches(text, @"\\label(?:.|\r?\n)*?\{(.+?)\}");
             foreach (Match match in matches.OfType<Match>())
             {
+                if (IsComment(text,match.Index))
+                    continue;
                 var label = new Label(match.Index,match.Value);
                 label.Name = match.Groups[1].Value;
                 label.EnvironmentName = GetEnvironmentName(text, match.Index).Content;
@@ -149,6 +174,18 @@ namespace TextProcessor.Latex
             throw new Exception(String.Format("Wrong number of macros params (macros name: {0}; pos: {1}).", startPos));
         }
 
+        public static bool IsComment(string text, int pos)
+        {
+            while (pos >= 0)
+            {
+                if (text[pos] == '%')
+                    return true;
+                if (text[pos] == '\n')
+                    return false;
+                --pos;
+            }
+            return false;
+        }
 
         public class ParamsInfo
         {
