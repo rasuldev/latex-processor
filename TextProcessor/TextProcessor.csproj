@@ -43,6 +43,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Latex\Environment.cs" />
+    <Compile Include="Latex\Eqref.cs" />
+    <Compile Include="Latex\Label.cs" />
+    <Compile Include="Latex\LatexPreProcessor.cs" />
+    <Compile Include="Latex\Macros.cs" />
+    <Compile Include="Latex\TextBlock.cs" />
+    <Compile Include="Latex\Utils.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

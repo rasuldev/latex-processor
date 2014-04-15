@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using TextProcessor.Latex;
 
 namespace TextProcessor
 {
@@ -11,12 +12,41 @@ namespace TextProcessor
     {
         static void Main(string[] args)
         {
+            Process2(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\processing\Magomed-Kasumov — копия.tex",
+                @"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\processing\Magomed-Kasumov.tex",
+                Encoding.GetEncoding("windows-1251"));
+
+
+
+
+            return;
+
             // Choose encoding of your file: default is UTF-8
             // var encoding = Encoding.GetEncoding("windows-1251");
             var encoding = Encoding.GetEncoding("utf-8");
             //ProcessFile(@"..\..\test.txt", @"..\..\test_processed.txt",encoding);
             ProcessFile(@"..\..\test_processed.txt", @"..\..\test2.txt", encoding);
         }
+
+        private static void Process2(string sourceFilename, string destinationFilename, Encoding encoding = null)
+        {
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+            var sb = new StringBuilder(File.ReadAllText(sourceFilename, encoding));
+            
+            // Macroses inlining
+            var macrosDef = @"\newcommand{\norm}[1]{\|#1\|_{p(\cdot),w}}";
+            sb.Replace(macrosDef, "");
+            var macros = new Macros(macrosDef);
+            macros.ApplyMacros(ref sb);
+
+            // equation labels renaming
+            Utils.RenameLabels(ref sb,"mmg_#name#_#num#");
+            
+            File.WriteAllText(destinationFilename, sb.ToString(), encoding);
+        }
+
+
 
         /// <summary>
         /// Replaces $$-blocks that have \eqno{num} by 

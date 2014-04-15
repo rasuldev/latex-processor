@@ -1,0 +1,41 @@
+﻿namespace TextProcessor.Latex
+{
+    public class TextBlock
+    {
+        public int StartPos { get; set; }
+
+        public int EndPos
+        {
+            get { return StartPos + Content.Length - 1; }
+        }
+
+        public int Length
+        {
+            get { return EndPos - StartPos + 1; }
+        }
+        public string Content { get; set; }
+
+
+        public TextBlock()
+        {
+
+        }
+
+        public TextBlock(int start, string content)
+        {
+            StartPos = start;
+            Content = content;
+            // TODO: check content.Length == Length
+        }
+
+        public override bool Equals(object obj)
+        {
+            var another = obj as TextBlock;
+            if (another == null)
+                return false;
+            return StartPos == another.StartPos &&
+                   Content == another.Content;
+
+        }
+    }
+}
