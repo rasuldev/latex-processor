@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Xml.Schema;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,33 @@ namespace Tests
     [TestFixture]
     public class UtilsTests
     {
+        [Test]
+        public void GetEnvironmentsTest()
+        {
+            string text =
+@"\begin{equation*}
+\begin{env1}text\end{env1}
+\begin{env2}
+    text
+    %\begin{envCommented}
+    \begin{env3}
+        text
+    \end{env3}
+    text
+\end{env2}      
+\|f\|_{p(\cdot),w} \le r_{p,q}^w \|f\|_{q(\cdot),w},
+\end{equation*}";
+            var actual = Utils.GetEnvironments(text).ToArray();
+            var expected = new TextProcessor.Latex.Environment[]
+            {
+                new TextProcessor.Latex.Environment(19,@"\begin{env1}",35,@"\end{env1}",@"env1"),
+                new TextProcessor.Latex.Environment(102,@"\begin{env3}",134,@"\end{env3}",@"env3"),
+                new TextProcessor.Latex.Environment(47,@"\begin{env2}",156,@"\end{env2}",@"env2"),
+                new TextProcessor.Latex.Environment(0,@"\begin{equation*}",228,@"\end{equation*}",@"equation*"),
+            };
+            Assert.AreEqual(expected, actual);
+        }
+
         [Test]
         public void GetEnvironmentTest()
         { 

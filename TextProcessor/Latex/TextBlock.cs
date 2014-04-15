@@ -21,6 +21,12 @@
 
         }
 
+        public TextBlock(string text, int start, int end)
+        {
+            StartPos = start;
+            Content = text.Substring(start, end - start + 1);
+        }
+
         public TextBlock(int start, string content)
         {
             StartPos = start;

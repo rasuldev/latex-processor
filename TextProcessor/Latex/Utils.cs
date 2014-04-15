@@ -10,21 +10,61 @@ namespace TextProcessor.Latex
 {
     public class Utils
     {
-        //public static IList<Environment> GetEnvironments(string text)
-        //{
-        //    //
-
-        //    Dictionary<string,Stack<int>> stacks = new Dictionary<string, Stack<int>>();
-
-        //}
-
-
-
-        //public static int Find
-        public static int FindClosingTag(string text, int start, string openTag, string closeTag)
+        public static IList<Environment> GetEnvironments(string text)
         {
-            text.IndexOf("sss");
+            // find all occurrences of \begin and \end 
+            var envBoundItems = new List<EnvironmentBound>();
+            int pos = -1;
+            while ((pos = text.IndexOf(@"\begin", pos+1, StringComparison.Ordinal)) > -1)
+            {
+                if (IsComment(text,pos))
+                    continue;
+                var paramsInfo = HarvestParams(text, pos, 1);
+                var bItem = new EnvironmentBound(pos, paramsInfo.EndPos, EnvironmentBound.Types.Begin, paramsInfo.ParamsList[0]);
+                envBoundItems.Add(bItem);
+            }
+
+            pos = -1;
+            while ((pos = text.IndexOf(@"\end", pos+1, StringComparison.Ordinal)) > -1)
+            {
+                if (IsComment(text, pos))
+                    continue;
+                var paramsInfo = HarvestParams(text, pos, 1);
+                var bItem = new EnvironmentBound(pos, paramsInfo.EndPos, EnvironmentBound.Types.End, paramsInfo.ParamsList[0]);
+                envBoundItems.Add(bItem);
+            }
+
+            // sort
+            envBoundItems = envBoundItems.OrderBy(i => i.Start).ToList();
+
+            // === extract environments ===
+            var envs = new List<Environment>();
+            var stacks = new Stack<EnvironmentBound>();
+            foreach (var envBound in envBoundItems)
+            {
+                if (envBound.Type == EnvironmentBound.Types.Begin)
+                {
+                    stacks.Push(envBound);
+                }
+                else
+                {
+                    var envStartBound = stacks.Pop();
+                    var env = new Environment(
+                        envStartBound.Start, text.Substring(envStartBound.Start,envStartBound.End-envStartBound.Start+1),
+                        envBound.Start, text.Substring(envBound.Start,envBound.End-envBound.Start+1), envBound.Name);
+                    envs.Add(env);
+                }
+            }
+            return envs;
         }
+
+
+
+        ////public static int Find
+        //public static int FindClosingTag(string text, int start, string openTag, string closeTag)
+        //{
+        //    text.IndexOf("sss");
+        //}
 
         public static TextBlock GetEnvironmentName(string text, int pos)
         {
@@ -42,7 +82,7 @@ namespace TextProcessor.Latex
                     // move to found bound item
                     pos = envEndPos;
                     // if it is a comment do nothing and go to the next iteration
-                    if (IsComment(text,pos))
+                    if (IsComment(text, pos))
                         continue;
 
                     // if closest bound item was \end then it means that we found inner environment
@@ -60,10 +100,10 @@ namespace TextProcessor.Latex
                     envStack.Pop();
                 }
             }
-            
+
             var envNameStartPos = text.IndexOf('{', envStartPos);
             var envNameEndPos = text.IndexOf('}', envNameStartPos);
-            return new TextBlock(envNameStartPos+1,
+            return new TextBlock(envNameStartPos + 1,
                     text.Substring(envNameStartPos + 1, envNameEndPos - envNameStartPos - 1));
         }
 
@@ -73,9 +113,9 @@ namespace TextProcessor.Latex
             var matches = Regex.Matches(text, @"\\label(?:.|\r?\n)*?\{(.+?)\}");
             foreach (Match match in matches.OfType<Match>())
             {
-                if (IsComment(text,match.Index))
+                if (IsComment(text, match.Index))
                     continue;
-                var label = new Label(match.Index,match.Value);
+                var label = new Label(match.Index, match.Value);
                 label.Name = match.Groups[1].Value;
                 label.EnvironmentName = GetEnvironmentName(text, match.Index).Content;
                 labels.Add(label);
@@ -103,16 +143,16 @@ namespace TextProcessor.Latex
         /// <param name="format">#name#</param>
         public static void RenameLabels(ref StringBuilder sb, string format)
         {
-            var labels = Utils.GetLabels(sb.ToString()).Where(l=>
-                l.EnvironmentName!="lemma" && l.EnvironmentName != "lemmaA" && 
+            var labels = Utils.GetLabels(sb.ToString()).Where(l =>
+                l.EnvironmentName != "lemma" && l.EnvironmentName != "lemmaA" &&
                 l.EnvironmentName != "theorem" && l.EnvironmentName != "theoremA" &&
                 l.EnvironmentName != "enumerate").ToList();
 
-            Dictionary<string,string> labelsOldNew = new Dictionary<string, string>();
+            Dictionary<string, string> labelsOldNew = new Dictionary<string, string>();
             var eqNumber = labels.Count;
-            foreach (var label in labels.OrderByDescending(l=>l.Block.StartPos))
+            foreach (var label in labels.OrderByDescending(l => l.Block.StartPos))
             {
-                Console.WriteLine(label.Name+"; "+label.EnvironmentName);
+                Console.WriteLine(label.Name + "; " + label.EnvironmentName);
                 var newName = format.Replace("#name#", label.Name).Replace("#num#", eqNumber.ToString());
                 labelsOldNew[label.Name] = newName;
                 sb.Remove(label.Block.StartPos, label.Block.Length);
@@ -191,6 +231,40 @@ namespace TextProcessor.Latex
         {
             public IList<string> ParamsList { get; set; }
             public int EndPos { get; set; }
+        }
+
+        class EnvironmentBound
+        {
+            public EnvironmentBound(int start, int end, Types type, string name)
+            {
+                Start = start;
+                End = end;
+                Type = type;
+                Name = name;
+            }
+            /// <summary>
+            /// Start position of \begin{envname} or \end{envname} block
+            /// </summary>
+            public int Start { get; set; }
+            /// <summary>
+            /// End position of \begin{envname} or \end{envname} block
+            /// </summary>
+            public int End { get; set; }
+            
+            /// <summary>
+            /// It can be "begin" or "end"
+            /// </summary>
+            public Types Type { get; set; }
+            /// <summary>
+            /// Contains the name of environment.
+            /// For example, if it was \begin{equation} then Name would be "equation".
+            /// </summary>
+            public string Name { get; set; }
+
+            public enum Types
+            {
+                Begin, End
+            }
         }
     }
 }
