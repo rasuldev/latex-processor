@@ -27,6 +27,15 @@ namespace TextProcessor.Latex
             throw new NotImplementedException();
         }
 
+        public Label GetLabel(string text)
+        {
+            var pos = text.IndexOf(@"\label", OpeningBlock.EndPos, ClosingBlock.StartPos - OpeningBlock.EndPos);
+            if (pos == -1)
+                return null;
+            var paramsInfo = Utils.HarvestParams(text, pos, 1);
+            return new Label(text, pos, paramsInfo.EndPos){Name = paramsInfo.ParamsList[0]};
+        }
+
         public override bool Equals(object obj)
         {
             var another = obj as Environment;

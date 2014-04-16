@@ -11,6 +11,11 @@
             Block = new TextBlock(start, content);
         }
 
+        public Label(string text, int start, int end)
+        {
+            Block = new TextBlock(text, start, end);
+        }
+
         public static string GenerateMarkup(string name)
         {
             return @"\label{" + name + "}";

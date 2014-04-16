@@ -15,9 +15,9 @@ namespace TextProcessor.Latex
             // find all occurrences of \begin and \end 
             var envBoundItems = new List<EnvironmentBound>();
             int pos = -1;
-            while ((pos = text.IndexOf(@"\begin", pos+1, StringComparison.Ordinal)) > -1)
+            while ((pos = text.IndexOf(@"\begin", pos + 1, StringComparison.Ordinal)) > -1)
             {
-                if (IsComment(text,pos))
+                if (IsComment(text, pos))
                     continue;
                 var paramsInfo = HarvestParams(text, pos, 1);
                 var bItem = new EnvironmentBound(pos, paramsInfo.EndPos, EnvironmentBound.Types.Begin, paramsInfo.ParamsList[0]);
@@ -25,7 +25,7 @@ namespace TextProcessor.Latex
             }
 
             pos = -1;
-            while ((pos = text.IndexOf(@"\end", pos+1, StringComparison.Ordinal)) > -1)
+            while ((pos = text.IndexOf(@"\end", pos + 1, StringComparison.Ordinal)) > -1)
             {
                 if (IsComment(text, pos))
                     continue;
@@ -50,8 +50,8 @@ namespace TextProcessor.Latex
                 {
                     var envStartBound = stacks.Pop();
                     var env = new Environment(
-                        envStartBound.Start, text.Substring(envStartBound.Start,envStartBound.End-envStartBound.Start+1),
-                        envBound.Start, text.Substring(envBound.Start,envBound.End-envBound.Start+1), envBound.Name);
+                        envStartBound.Start, text.Substring(envStartBound.Start, envStartBound.End - envStartBound.Start + 1),
+                        envBound.Start, text.Substring(envBound.Start, envBound.End - envBound.Start + 1), envBound.Name);
                     envs.Add(env);
                 }
             }
@@ -135,6 +135,18 @@ namespace TextProcessor.Latex
             return items;
         }
 
+        public static IList<Ref> GetRefs(string text)
+        {
+            List<Ref> items = new List<Ref>();
+            var matches = Regex.Matches(text, @"\\ref(?:.|\r?\n)*?\{(.+?)\}");
+            foreach (Match match in matches.OfType<Match>())
+            {
+                var item = new Ref(match.Index, match.Value);
+                items.Add(item);
+            }
+            return items;
+        }
+
 
         /// <summary>
         /// 
@@ -172,6 +184,54 @@ namespace TextProcessor.Latex
                 }
             }
 
+
+        }
+
+        /// <summary>
+        /// It doesn't work for nested environments
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="envName"></param>
+        /// <param name="prefix">Use placeholder #counter# for number</param>
+        /// <param name="postfix"></param>
+        public static void RenameEnvs(ref StringBuilder sb, string envName, string prefix, string postfix, Func<int,string> counterFunc = null)
+        {
+            var envs = GetEnvironments(sb.ToString()).Where(e => e.Name == envName).OrderByDescending(e=>e.OpeningBlock.StartPos);
+            if (counterFunc == null)
+                counterFunc = i => i.ToString();
+            var counter = envs.Count();
+            
+            // Saves label numbers to replace refs 
+            var labelNumbers = new Dictionary<string, string>();
+            
+            // Replaces all environments with name = envName
+            foreach (var env in envs)
+            {
+                sb.Remove(env.ClosingBlock.StartPos, env.ClosingBlock.Length);
+                sb.Insert(env.ClosingBlock.StartPos, postfix);
+
+                var label = env.GetLabel(sb.ToString());
+                if (label != null)
+                {
+                    labelNumbers[label.Name] = counterFunc(counter);
+                    sb.Remove(label.Block.StartPos, label.Block.Length);
+                }
+
+                sb.Remove(env.OpeningBlock.StartPos, env.OpeningBlock.Length);
+                sb.Insert(env.OpeningBlock.StartPos, prefix.Replace("#counter#", counterFunc(counter)));
+                --counter;
+            }
+
+            // Processing refs
+            var refs = GetRefs(sb.ToString()).OrderByDescending(r=>r.Block.StartPos);
+            foreach (var refItem in refs)
+            {
+                if (labelNumbers.ContainsKey(refItem.Value))
+                {
+                    RemoveBlock(sb, refItem.Block);
+                    sb.Insert(refItem.Block.StartPos, labelNumbers[refItem.Value]);
+                }
+            }
 
         }
 
@@ -227,6 +287,12 @@ namespace TextProcessor.Latex
             return false;
         }
 
+        public static void RemoveBlock(StringBuilder sb, TextBlock block)
+        {
+            sb.Remove(block.StartPos, block.Length);
+        }
+
+
         public class ParamsInfo
         {
             public IList<string> ParamsList { get; set; }
@@ -250,7 +316,7 @@ namespace TextProcessor.Latex
             /// End position of \begin{envname} or \end{envname} block
             /// </summary>
             public int End { get; set; }
-            
+
             /// <summary>
             /// It can be "begin" or "end"
             /// </summary>

@@ -133,5 +133,92 @@ namespace Tests
 
             Assert.AreEqual(expected,eqrefs);
         }
+
+        [Test]
+        public void ReplaceEnvsTest()
+        {
+            string text =
+@"Справедлива следующая лемма
+\begin{lemma}\label{first}
+AAA
+\end{lemma}
+Самостоятельный интерес представляет также
+\begin{lemma}\label{second}
+BBB
+\end{lemma}
+В дальнейшем нам также понадобится, которая вытекает из лемм \ref{first} и \ref{second}.
+\begin{lemma}\label{third}
+CCC
+\end{lemma}
+Леммы \ref{first} и \ref{third} используются при доказательстве теоремы.
+\begin{theorem}
+DDD
+\end{theorem}";
+            string expected =
+@"Справедлива следующая лемма
+\textbf{Лемма 1.}\textit{
+AAA
+}
+Самостоятельный интерес представляет также
+\textbf{Лемма 2.}\textit{
+BBB
+}
+В дальнейшем нам также понадобится, которая вытекает из лемм 1 и 2.
+\textbf{Лемма 3.}\textit{
+CCC
+}
+Леммы 1 и 3 используются при доказательстве теоремы.
+\begin{theorem}
+DDD
+\end{theorem}";
+            var sb = new StringBuilder(text);
+            Utils.RenameEnvs(ref sb,"lemma",@"\textbf{Лемма #counter#.}\textit{","}");
+            Assert.AreEqual(expected,sb.ToString());
+
+        }
+
+        [Test]
+        public void ReplaceEnvsATest()
+        {
+            string text =
+@"Справедлива следующая лемма
+\begin{lemma}\label{first}
+AAA
+\end{lemma}
+Самостоятельный интерес представляет также
+\begin{lemma}\label{second}
+BBB
+\end{lemma}
+В дальнейшем нам также понадобится, которая вытекает из лемм \ref{first} и \ref{second}.
+\begin{lemma}\label{third}
+CCC
+\end{lemma}
+Леммы \ref{first} и \ref{third} используются при доказательстве теоремы.
+\begin{theorem}
+DDD
+\end{theorem}";
+            string expected =
+@"Справедлива следующая лемма
+\textbf{Лемма A.}\textit{
+AAA
+}
+Самостоятельный интерес представляет также
+\textbf{Лемма B.}\textit{
+BBB
+}
+В дальнейшем нам также понадобится, которая вытекает из лемм A и B.
+\textbf{Лемма C.}\textit{
+CCC
+}
+Леммы A и C используются при доказательстве теоремы.
+\begin{theorem}
+DDD
+\end{theorem}";
+            var sb = new StringBuilder(text);
+            Utils.RenameEnvs(ref sb, "lemma", @"\textbf{Лемма #counter#.}\textit{", "}", i=>new[]{"A","B","C"}[i-1]);
+            Assert.AreEqual(expected, sb.ToString());
+
+        }
+
     }
 }

@@ -47,6 +47,11 @@ namespace TextProcessor
             // equation labels renaming
             Utils.RenameLabels(ref sb,"mmg_#name#_#num#");
             
+            // replace theorem environments
+            Utils.RenameEnvs(ref sb, "lemma","\r\n\r\n"+@"\textbf{Лемма #counter#.}\textit{","}\r\n\r\n");
+            Utils.RenameEnvs(ref sb, "theorem", "\r\n\r\n" + @"\textbf{Теорема #counter#.}\textit{", "}\r\n\r\n");
+            Utils.RenameEnvs(ref sb, "theoremA", "\r\n\r\n" + @"\textbf{Теорема #counter#.}\textit{", "}\r\n\r\n", i => new[] { "A", "B", "C" }[i - 1]);
+
             File.WriteAllText(destinationFilename, sb.ToString(), encoding);
         }
 
