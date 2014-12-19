@@ -13,15 +13,15 @@ namespace TextProcessor
         static void Main(string[] args)
         {
 
-            Process2(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\processing\Magomed-Kasumov — копия.tex",
-                @"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\processing\Magomed-Kasumov.tex",
-                Encoding.GetEncoding("windows-1251"));
+            //Process2(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\Magomed-Kasumov.tex",
+            //    @"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\processing\Magomed-Kasumov.tex",
+            //    Encoding.GetEncoding("windows-1251"));
 
             //Process2(@"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG.tex",
             //         @"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG_p.tex",
             //    Encoding.GetEncoding("windows-1251"));
 
-
+            ProcessFile(@"d:\Dropbox\~INFO_MEAT\SpecFejerVal1.tex", @"d:\Dropbox\~INFO_MEAT\SpecFejerVal2.tex", Encoding.GetEncoding("windows-1251"));
 
             return;
 
@@ -52,6 +52,16 @@ namespace TextProcessor
             Utils.RenameEnvs(ref sb, "theorem", "\r\n\r\n" + @"\textbf{Теорема #counter#.}\textit{", "}\r\n\r\n");
             Utils.RenameEnvs(ref sb, "theoremA", "\r\n\r\n" + @"\textbf{Теорема #counter#.}\textit{", "}\r\n\r\n", i => new[] { "A", "B", "C" }[i - 1]);
 
+            // remove block "My notations"
+            
+            var lineStart = Utils.FindLine(sb.ToString(),"===My notations");
+            var lineEnd = Utils.FindLine(sb.ToString(), "===/My notations");
+            for (int i = lineEnd; i >= lineStart; i--)
+            {
+                Utils.RemoveLine(sb, i);
+            }
+
+
             File.WriteAllText(destinationFilename, sb.ToString(), encoding);
         }
 
@@ -68,11 +78,12 @@ namespace TextProcessor
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var source = File.ReadAllText(sourceFilename, encoding);
-            //var text = MakeEquationWithLabelsFromDollars(source);
-            var text = MakeDollarsFromEquationWithLabels(source);
+            var text = MakeEquationWithLabelsFromDollars(source);
+            //var text = MakeDollarsFromEquationWithLabels(source);
             File.WriteAllText(destinationFilename, text, encoding);
         }
 
+        // todo: works wrong when labels inside other than equation environments 
         static string MakeDollarsFromEquationWithLabels(string source)
         {
             var sb = new StringBuilder(source);
@@ -131,7 +142,7 @@ namespace TextProcessor
 
                 int beginDollarsPos = sb.ToString().LastIndexOf("$$", match.Index);
                 var eqNumber = match.Groups[1].Value.Trim();
-                sb = sb.Replace("$$", @"\begin{equation}\label{" + eqNumber + "}", beginDollarsPos, 2);
+                sb = sb.Replace("$$", @"\begin{equation}\label{eq" + eqNumber + "}", beginDollarsPos, 2);
                 eqNumbers.Add(eqNumber);
             }
 
@@ -154,16 +165,16 @@ namespace TextProcessor
                 for (int i = 0; i < textFragments.Length; i += 2)
                 {
                     // fragment = textFragments[i];
-                    textFragments[i] = Regex.Replace(textFragments[i], string.Format(@"\(\s*{0}\s*\)", eqNumber), @"\eqref{" + eqNumber + "}");
+                    textFragments[i] = Regex.Replace(textFragments[i], string.Format(@"\(\s*{0}\s*\)", eqNumber), @"\eqref{eq" + eqNumber + "}");
                 }
             }
             // Join fragments 
             text = string.Join("", textFragments);
 
             // Removing redundant newlines before \end{equation}
-            text = Regex.Replace(text, @"(\r?\n\s*){2,}\\end{equation}", "\r\n\\end{equation}");
+            //text = Regex.Replace(text, @"(\r?\n\s*){2,}\\end{equation}", "\r\n\\end{equation}");
             // Removing redundant newlines after \begin{equation}
-            text = Regex.Replace(text, @"\\begin{equation}(?<label>\\label{.*?})?(\r?\n\s*){2,}", "\\begin{equation}${label}\r\n");
+            //text = Regex.Replace(text, @"\\begin{equation}(?<label>\\label{.*?})?(\r?\n\s*){2,}", "\\begin{equation}${label}\r\n");
             return text;
         }
     }

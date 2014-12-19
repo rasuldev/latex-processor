@@ -220,5 +220,38 @@ DDD
 
         }
 
+        [Test]
+        public void RemoveLineTest()
+        {
+            string text =
+@"1abc
+2abc
+3abc
+4abc
+5abc";
+            var sb = new StringBuilder(text);
+            Utils.RemoveLine(sb, 1);
+            string expected =
+@"1abc
+3abc
+4abc
+5abc";
+            Assert.AreEqual(expected,sb.ToString());
+        }
+
+        [Test]
+        public void FindLineTest()
+        {
+            string text = "1abc\r\n2abc\r\n3abc\r\n4abc";
+            int line = Utils.FindLine(text, 6);
+            Assert.AreEqual(1,line);
+
+            line = Utils.FindLine(text, 1);
+            Assert.AreEqual(0, line);
+
+            line = Utils.FindLine(text, 12);
+            Assert.AreEqual(2, line);
+        }
+
     }
 }

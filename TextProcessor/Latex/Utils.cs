@@ -194,16 +194,16 @@ namespace TextProcessor.Latex
         /// <param name="envName"></param>
         /// <param name="prefix">Use placeholder #counter# for number</param>
         /// <param name="postfix"></param>
-        public static void RenameEnvs(ref StringBuilder sb, string envName, string prefix, string postfix, Func<int,string> counterFunc = null)
+        public static void RenameEnvs(ref StringBuilder sb, string envName, string prefix, string postfix, Func<int, string> counterFunc = null)
         {
-            var envs = GetEnvironments(sb.ToString()).Where(e => e.Name == envName).OrderByDescending(e=>e.OpeningBlock.StartPos);
+            var envs = GetEnvironments(sb.ToString()).Where(e => e.Name == envName).OrderByDescending(e => e.OpeningBlock.StartPos);
             if (counterFunc == null)
                 counterFunc = i => i.ToString();
             var counter = envs.Count();
-            
+
             // Saves label numbers to replace refs 
             var labelNumbers = new Dictionary<string, string>();
-            
+
             // Replaces all environments with name = envName
             foreach (var env in envs)
             {
@@ -223,7 +223,7 @@ namespace TextProcessor.Latex
             }
 
             // Processing refs
-            var refs = GetRefs(sb.ToString()).OrderByDescending(r=>r.Block.StartPos);
+            var refs = GetRefs(sb.ToString()).OrderByDescending(r => r.Block.StartPos);
             foreach (var refItem in refs)
             {
                 if (labelNumbers.ContainsKey(refItem.Value))
@@ -292,6 +292,52 @@ namespace TextProcessor.Latex
             sb.Remove(block.StartPos, block.Length);
         }
 
+        /*
+        /// <summary>
+        /// Removes line where symbol with pos number is located
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="pos"></param>
+        public static void RemoveLine(StringBuilder sb, int pos)
+        {
+            string text = sb.ToString();
+            var s = text.LastIndexOf('\n', pos);
+            if (s == -1) s = 0;
+            var e = text.IndexOfAny(new[] { '\r', '\n' }, pos);
+            if (e == -1)
+                e = text.Length - 1;
+
+            sb.Remove(s, e - s + 1);
+        }
+        */
+
+        public static void RemoveLine(StringBuilder sb, int lineNumber)
+        {
+            int c = 0, pos = -1;
+            string text = sb.ToString();
+            while (c < lineNumber && (pos = text.IndexOf('\n', pos + 1)) > -1)
+                ++c;
+            if (c < lineNumber)
+                throw new Exception("No line with number " + lineNumber);
+            int posEnd = text.IndexOf('\n', pos + 1);
+            sb.Remove(pos + 1, posEnd - pos);
+        }
+
+        public static int FindLine(string text, int pos)
+        {
+            if (pos >= text.Length || pos < 0)
+                throw new IndexOutOfRangeException("Parameter pos can't be greater than text length or less than 0");
+            int c = 0, p = -1;
+            
+            while ((p = text.IndexOf('\n', p + 1)) > -1 && p < pos)
+                ++c;
+                
+            return c;
+        }
+        public static int FindLine(string text, string search)
+        {
+             return FindLine(text, text.IndexOf(search));
+        }
 
         public class ParamsInfo
         {
