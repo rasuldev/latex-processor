@@ -21,7 +21,8 @@ namespace TextProcessor
             //         @"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG_p.tex",
             //    Encoding.GetEncoding("windows-1251"));
 
-            ProcessFile(@"d:\Dropbox\~INFO_MEAT\SpecFejerVal1.tex", @"d:\Dropbox\~INFO_MEAT\SpecFejerVal2.tex", Encoding.GetEncoding("windows-1251"));
+            ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\НИРиНОР\НОР\Планы и отчеты ВНЦ\Итоговый отчет по теме НИР 2012-2014\Шарапудинов\temp\temp.tex", @"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\НИРиНОР\НОР\Планы и отчеты ВНЦ\Итоговый отчет по теме НИР 2012-2014\Шарапудинов\temp\tempEq.tex", Encoding.GetEncoding("windows-1251"));
+            //ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки main — копия.tex", @"D:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки mainEq.tex", Encoding.GetEncoding("windows-1251"));
 
             return;
 
@@ -119,7 +120,7 @@ namespace TextProcessor
             return sb.ToString();
         }
 
-        static string MakeEquationWithLabelsFromDollars(string source)
+        static string MakeEquationWithLabelsFromDollars(string source, string labelPrefix = "eq")
         {
             var sb = new StringBuilder(source);
 
@@ -142,7 +143,7 @@ namespace TextProcessor
 
                 int beginDollarsPos = sb.ToString().LastIndexOf("$$", match.Index);
                 var eqNumber = match.Groups[1].Value.Trim();
-                sb = sb.Replace("$$", @"\begin{equation}\label{eq" + eqNumber + "}", beginDollarsPos, 2);
+                sb = sb.Replace("$$", @"\begin{equation}\label{" + labelPrefix + eqNumber + "}", beginDollarsPos, 2);
                 eqNumbers.Add(eqNumber);
             }
 
@@ -165,7 +166,7 @@ namespace TextProcessor
                 for (int i = 0; i < textFragments.Length; i += 2)
                 {
                     // fragment = textFragments[i];
-                    textFragments[i] = Regex.Replace(textFragments[i], string.Format(@"\(\s*{0}\s*\)", eqNumber), @"\eqref{eq" + eqNumber + "}");
+                    textFragments[i] = Regex.Replace(textFragments[i], string.Format(@"\(\s*{0}\s*\)", Regex.Escape(eqNumber)), @"\eqref{" + labelPrefix + eqNumber + "}");
                 }
             }
             // Join fragments 
