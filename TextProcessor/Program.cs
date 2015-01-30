@@ -38,7 +38,7 @@ namespace TextProcessor
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var sb = new StringBuilder(File.ReadAllText(sourceFilename, encoding));
-            
+
             // Macroses inlining
             var macrosDef = @"\newcommand{\norm}[1]{\|#1\|_{p(\cdot),w}}";
             sb.Replace(macrosDef, "");
@@ -46,16 +46,16 @@ namespace TextProcessor
             macros.ApplyMacros(ref sb);
 
             // equation labels renaming
-            Utils.RenameLabels(ref sb,"mmg_#name#_#num#");
-            
+            Utils.RenameLabels(ref sb, "mmg_#name#_#num#");
+
             // replace theorem environments
-            Utils.RenameEnvs(ref sb, "lemma","\r\n\r\n"+@"\textbf{Лемма #counter#.}\textit{","}\r\n\r\n");
+            Utils.RenameEnvs(ref sb, "lemma", "\r\n\r\n" + @"\textbf{Лемма #counter#.}\textit{", "}\r\n\r\n");
             Utils.RenameEnvs(ref sb, "theorem", "\r\n\r\n" + @"\textbf{Теорема #counter#.}\textit{", "}\r\n\r\n");
             Utils.RenameEnvs(ref sb, "theoremA", "\r\n\r\n" + @"\textbf{Теорема #counter#.}\textit{", "}\r\n\r\n", i => new[] { "A", "B", "C" }[i - 1]);
 
             // remove block "My notations"
-            
-            var lineStart = Utils.FindLine(sb.ToString(),"===My notations");
+
+            var lineStart = Utils.FindLine(sb.ToString(), "===My notations");
             var lineEnd = Utils.FindLine(sb.ToString(), "===/My notations");
             for (int i = lineEnd; i >= lineStart; i--)
             {
@@ -79,8 +79,9 @@ namespace TextProcessor
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var source = File.ReadAllText(sourceFilename, encoding);
-            var text = MakeEquationWithLabelsFromDollars(source,"kad-ito");
+            //var text = MakeEquationWithLabelsFromDollars(source,"kad-ito");
             //var text = MakeDollarsFromEquationWithLabels(source);
+            var text = WrapInEnvironment(source, @"\\textbf{Замечание (\d*).*}", "|||", "замечани", "remark", "kad-ito");
             File.WriteAllText(destinationFilename, text, encoding);
         }
 
@@ -177,6 +178,49 @@ namespace TextProcessor
             // Removing redundant newlines after \begin{equation}
             //text = Regex.Replace(text, @"\\begin{equation}(?<label>\\label{.*?})?(\r?\n\s*){2,}", "\\begin{equation}${label}\r\n");
             return text;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="startBlock">Must contain one capture block ()</param>
+        /// <param name="endBlock"></param>
+        /// <param name="blockname"></param>
+        /// <param name="envName"></param>
+        /// <param name="labelPrefix"></param>
+        /// <returns></returns>
+        static string WrapInEnvironment(string source, string startBlock, string endBlock, string blockname, string envName, string labelPrefix)
+        {
+            var sb = new StringBuilder(source);
+            char[] passChars = { ' ', ',', '-', 'и' };
+            var matches = Regex.Matches(source, startBlock);
+
+            List<string> envNumbers = new List<string>();
+
+            // Process matches (to avoid changing matching positions during replace we do processing from end to begin) 
+            foreach (Match match in matches.OfType<Match>().OrderByDescending(m => m.Index))
+            {
+                Console.WriteLine("{0}({1})", match.Groups[1].Value.Trim(), match.Index);
+
+                int startBlockPos = match.Index;
+                sb = sb.Remove(match.Index, match.Value.Length);
+                sb = sb.Insert(match.Index, String.Format(@"\begin{{{0}}}\label{{{1}:{2}}}", envName, labelPrefix, match.Groups[1].Value));
+
+                // find endBlock
+                int endBlockPos = sb.ToString().IndexOf(endBlock, startBlockPos);
+                if (endBlockPos == -1)
+                {
+                    Console.WriteLine("Error: " + startBlockPos);
+                    continue;
+                }
+                sb.Remove(endBlockPos, endBlock.Length);
+                sb.Insert(endBlockPos, String.Format(@"\end{{{0}}}", envName));
+
+
+            }
+
+            return sb.ToString();
         }
     }
 }
