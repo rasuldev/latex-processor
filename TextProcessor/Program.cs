@@ -21,7 +21,7 @@ namespace TextProcessor
             //         @"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG_p.tex",
             //    Encoding.GetEncoding("windows-1251"));
 
-            ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\НИРиНОР\НОР\Планы и отчеты ВНЦ\Итоговый отчет по теме НИР 2012-2014\Шарапудинов\temp\temp.tex", @"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\НИРиНОР\НОР\Планы и отчеты ВНЦ\Итоговый отчет по теме НИР 2012-2014\Шарапудинов\temp\tempEq.tex", Encoding.GetEncoding("windows-1251"));
+            ProcessFile(@"d:\Temp\temp.tex", @"d:\Temp\tempEq.tex", Encoding.GetEncoding("windows-1251"));
             //ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки main — копия.tex", @"D:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки mainEq.tex", Encoding.GetEncoding("windows-1251"));
 
             return;
@@ -79,7 +79,7 @@ namespace TextProcessor
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var source = File.ReadAllText(sourceFilename, encoding);
-            var text = MakeEquationWithLabelsFromDollars(source);
+            var text = MakeEquationWithLabelsFromDollars(source,"kad-ito");
             //var text = MakeDollarsFromEquationWithLabels(source);
             File.WriteAllText(destinationFilename, text, encoding);
         }
@@ -125,7 +125,7 @@ namespace TextProcessor
             var sb = new StringBuilder(source);
 
             // Find all occurrences of eqno and extract number
-            var matches = Regex.Matches(source, @"\\eqno(?:.|\r?\n)*?\((.+?)\)");
+            var matches = Regex.Matches(source, @"(?:\r?\n)*\\eqno(?:.|\r?\n)*?\((.+?)\)");
 
             // In eqNumbers we will collect equation numbers
             // It will be used to change formula references from (52.1) to \eqref{52.1}
