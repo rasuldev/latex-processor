@@ -43,5 +43,10 @@
                    Content == another.Content;
 
         }
+
+        public override string ToString()
+        {
+            return Content;
+        }
     }
 }

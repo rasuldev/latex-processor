@@ -253,5 +253,27 @@ DDD
             Assert.AreEqual(2, line);
         }
 
+        [Test]
+        public void ExtractBlockTest()
+        {
+            string text = "Используя теоремы 1, 2 и 5, мы можем получить";
+            string startRegexp = " |~";
+            string endRegexp = @" |\d|,|~|и|-";
+            var tb = Utils.ExtractBlock(text, 15, startRegexp, endRegexp);
+            Assert.AreEqual(tb.StartPos,17);
+            Assert.AreEqual(tb.EndPos, 27); 
+        }
+
+        [Test]
+        public void ExtractBlockTest2()
+        {
+            string text = "Используя теоремы~1, 2 и 5 - 8, мы можем получить";
+            string startRegexp = " |~";
+            string endRegexp = @" |\d|,|~|и|-";
+            var tb = Utils.ExtractBlock(text, 15, startRegexp, endRegexp);
+            Assert.AreEqual(tb.StartPos, 17);
+            Assert.AreEqual(tb.EndPos, 31);
+        }
+
     }
 }

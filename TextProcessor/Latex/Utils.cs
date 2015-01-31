@@ -287,10 +287,13 @@ namespace TextProcessor.Latex
             return false;
         }
 
-        public static void RemoveBlock(StringBuilder sb, TextBlock block)
+        public static StringBuilder RemoveBlock(StringBuilder sb, TextBlock block)
         {
-            sb.Remove(block.StartPos, block.Length);
+            return sb.Remove(block.StartPos, block.Length);
         }
+
+
+
 
         /*
         /// <summary>
@@ -328,15 +331,49 @@ namespace TextProcessor.Latex
             if (pos >= text.Length || pos < 0)
                 throw new IndexOutOfRangeException("Parameter pos can't be greater than text length or less than 0");
             int c = 0, p = -1;
-            
+
             while ((p = text.IndexOf('\n', p + 1)) > -1 && p < pos)
                 ++c;
-                
+
             return c;
         }
         public static int FindLine(string text, string search)
         {
-             return FindLine(text, text.IndexOf(search));
+            return FindLine(text, text.IndexOf(search));
+        }
+
+        /// <summary>
+        /// Every symbol after startIndex will be tested by startSymbols regexp to find start of block. 
+        /// After that every symbol will be tested by inBlockSymbols until it fails. 
+        /// That position is considered as end of block. 
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="startSymbols">Regular expression for possible start symbols</param>
+        /// <param name="inBlockSymbols">Regular expression for possible symbols within block</param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static TextBlock ExtractBlock(string text, int startIndex, string startSymbols, string inBlockSymbols, int count = 20)
+        {
+            var testedStr = text.Substring(startIndex, Math.Min(count, text.Length - startIndex));
+            var match = Regex.Match(testedStr, startSymbols, RegexOptions.IgnoreCase);
+            if (!match.Success)
+                return null;
+            int pos = match.Index;
+            do
+            {
+                ++pos;
+            } while (pos < testedStr.Length && Regex.IsMatch(testedStr[pos].ToString(), inBlockSymbols));
+            if (pos == testedStr.Length)
+                Console.WriteLine("Warning: possible cut of block");
+            return new TextBlock(text, startIndex + match.Index, startIndex + pos - 1);
+        }
+
+        public static TextBlock ExtractRefsBlock(string text, int startIndex, int count = 20)
+        {
+            string startRegexp = " |~";
+            string endRegexp = @" |\d|,|~|и|-";
+            return ExtractBlock(text, startIndex, startRegexp, endRegexp, count);
         }
 
         public class ParamsInfo
