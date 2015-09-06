@@ -43,7 +43,12 @@ namespace TextProcessor
                 sb = sb.Replace(@"\eqref{" + labelsArr[i] + @"}", "(" + (i + 1) + ")");
             }
 
-            return sb.ToString();
+            // Removing blank lines at begin or end of $$-blocks
+            var cleaned = Regex.Replace(sb.ToString(), @"\$\$(\r?\n){2,}", "$$$$\r\n");
+            //var cleaned = Regex.Replace(sb.ToString(), @"(?<=\$\$.*?)(\r?\n){2,}(?=.*?\$\$)", "\r\n");
+            // TODO: remove all blank lines inside $$-blocks
+            //cleaned = Regex.Replace(cleaned, @"(\r?\n)+\$\$", "\r\n$$$$");
+            return cleaned;
         }
 
         public static string MakeEquationWithLabelsFromDollars(string source, string labelPrefix = "eq")

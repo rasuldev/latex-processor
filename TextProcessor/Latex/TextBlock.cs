@@ -4,15 +4,9 @@
     {
         public int StartPos { get; set; }
 
-        public int EndPos
-        {
-            get { return StartPos + Content.Length - 1; }
-        }
+        public int EndPos => StartPos + Content.Length - 1;
 
-        public int Length
-        {
-            get { return EndPos - StartPos + 1; }
-        }
+        public int Length => EndPos - StartPos + 1;
         public string Content { get; set; }
 
 

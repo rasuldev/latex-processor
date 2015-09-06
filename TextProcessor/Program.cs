@@ -21,7 +21,9 @@ namespace TextProcessor
             //         @"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG_p.tex",
             //    Encoding.GetEncoding("windows-1251"));
 
-            ProcessFile(@"f:\Temp\temp.tex", @"f:\Temp\tempEq.tex", Encoding.GetEncoding("windows-1251"));
+            ProcessFile(
+                @"g:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\ИИ\Итоги науки 2015-2016\1-SharapudinovII.tex",
+                @"g:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\ИИ\Итоги науки 2015-2016\1-SharapudinovII-new.tex", Encoding.GetEncoding("windows-1251"));
             //ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки main — копия.tex", @"D:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки mainEq.tex", Encoding.GetEncoding("windows-1251"));
 
             return;
@@ -80,8 +82,9 @@ namespace TextProcessor
                 encoding = new UTF8Encoding();
             var source = File.ReadAllText(sourceFilename, encoding);
             //var text = MakeEquationWithLabelsFromDollars(source,"kad-ito");
-            //var text = MakeDollarsFromEquationWithLabels(source);
-            var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Замечание (\d*).*}", "%e", "замечани", "remark", n => "kad-ito:"+n);
+            var text = CommonProcessor.MakeDollarsFromEquationWithLabels(source);
+            //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Замечание (\d*).*}", "%e", "замечани", "remark", n => "kad-ito:"+n);
+            //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Определение ((\d|\.)*).*?}", "%e", "определени", "definition", n => "sirazh2:" + n);
             File.WriteAllText(destinationFilename, text, encoding);
         }
 
