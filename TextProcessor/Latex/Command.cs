@@ -25,7 +25,7 @@ namespace TextProcessor.Latex
 
         public static string GenerateMarkup(string commandName, string paramValue)
         {
-            return String.Format("\\{0}{{{1}}}",commandName,paramValue);
+            return $"\\{commandName}{{{paramValue}}}";
         } 
     }
 }

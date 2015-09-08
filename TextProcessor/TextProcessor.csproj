@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonProcessor.cs" />
+    <Compile Include="Latex\Cite.cs" />
     <Compile Include="Latex\Command.cs" />
     <Compile Include="Latex\Environment.cs" />
     <Compile Include="Latex\Eqref.cs" />
