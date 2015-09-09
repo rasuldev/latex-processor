@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using TextProcessor.Latex;
@@ -120,7 +121,7 @@ namespace TextProcessor
         /// <param name="envName"></param>
         /// <param name="labelPrefix"></param>
         /// <returns></returns>
-        public static string WrapInEnvironment(string source, string startBlock, string endBlock, string blocknameInText, string envName, Func<string,string> labelForNum)
+        public static string WrapInEnvironment(string source, string startBlock, string endBlock, string blocknameInText, string envName, Func<string, string> labelForNum)
         {
             var sb = new StringBuilder(source);
             // First step: Find blocks and wrap them in environments
@@ -188,7 +189,7 @@ namespace TextProcessor
             }
         }
 
-        public static string InsertRefs(string textBlock, string[] refs, Func<string,string> labelForRef)
+        public static string InsertRefs(string textBlock, string[] refs, Func<string, string> labelForRef)
         {
             var sb = new StringBuilder(textBlock);
             foreach (var item in refs)
@@ -200,20 +201,95 @@ namespace TextProcessor
 
 
             char[] separators = { ' ', ',', '-', 'и', '~' };
-            
+
             // each chunk is a reference represented as a number (numRef). 
             // We're going to replace them by \ref{label}
-            var numRefs = textBlock.Split(separators, StringSplitOptions.RemoveEmptyEntries).Select(s=>s.Trim()).ToList();
-            
+            var numRefs = textBlock.Split(separators, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+
             // We don't touch numRef if it is not presented in refs array
             foreach (var numRef in numRefs)
             {
                 if (refs.Contains(numRef))
                 {
-                    
+
                 }
             }
 
+        }
+
+        public static string ArrangeCites(string text)
+        {
+            var cites = Utils.GetCites(text);
+            var bibenv = Utils.FindEnv(text, "thebibliography");
+            var bibitems = Utils.GetBibitems(text, bibenv);
+            //cites.ForEach(c => Console.WriteLine(c));
+
+            // to change ref numbers we rename them into some temp refs
+            //foreach (var cite in cites)
+            //{
+            //    cite.Keys = cite.Keys.Select(k => "a" + k).ToList();
+            //}
+            //foreach (var bibitem in bibitems)
+            //{
+            //    bibitem.Key = "a" + bibitem.Key;
+            //}
+
+
+            var keys = cites.SelectMany(c => c.Keys).ToList();
+
+            // remove bibitems that have no refs from text
+            bibitems = bibitems.Where(b => keys.Contains(b.Key)).ToList();
+            //keys.ForEach(c => Console.WriteLine(c));
+
+            // numeration in appearence order
+            var newKeyFor = new Dictionary<string, int>();
+            var seenBefore = new HashSet<string>();
+            int num = 1;
+            foreach (var key in keys)
+            {
+                if (seenBefore.Contains(key))
+                    continue;
+                newKeyFor[key] = num;
+                ++num;
+                seenBefore.Add(key);
+            }
+
+            //foreach (var pair in newKeyFor.OrderBy(p => p.Value))
+            //{
+            //    Console.WriteLine(pair);
+            //}
+
+            foreach (var cite in cites)
+            {
+                cite.Keys = cite.Keys.Select(k => newKeyFor[k].ToString()).ToList();                
+            }
+
+            foreach (var bibitem in bibitems)
+            {
+                bibitem.Key = newKeyFor[bibitem.Key].ToString();
+            }
+
+            var sb = new StringBuilder(text);
+
+            // Clear bib environment content and place bibitems in ordered way
+            sb.Remove(bibenv.OpeningBlock.EndPos + 1, bibenv.ClosingBlock.StartPos - bibenv.OpeningBlock.EndPos - 1);
+
+            var sbBibInner = new StringBuilder();
+            foreach (var item in bibitems.OrderBy(b=>int.Parse(b.Key)))
+            {
+                sbBibInner.AppendLine(item.ToString());
+            }
+
+            sb.Insert(bibenv.OpeningBlock.EndPos + 1, sbBibInner.ToString());
+
+            // change cites
+            foreach (var cite in cites.OrderByDescending(c=>c.Block.StartPos))
+            {
+                Utils.RemoveBlock(sb, cite.Block);
+                sb.Insert(cite.Block.StartPos, cite.ToString());
+            }
+
+            return sb.ToString();
         }
     }
 }

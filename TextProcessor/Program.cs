@@ -22,17 +22,17 @@ namespace TextProcessor
             //    Encoding.GetEncoding("windows-1251"));
 
             ProcessFile(
-                @"g:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\ИИ\Итоги науки 2015-2016\1-SharapudinovII.tex",
-                @"g:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\ИИ\Итоги науки 2015-2016\1-SharapudinovII-new.tex", Encoding.GetEncoding("windows-1251"));
+                @"g:\Dropbox\INFO_BASE\DOCS\000 делопроизводство\001 Grants\Проект РФФИ 2016\ПроектРФФИ_2016до2018_Form4.tex",
+                Encoding.GetEncoding("windows-1251"));
             //ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки main — копия.tex", @"D:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки mainEq.tex", Encoding.GetEncoding("windows-1251"));
 
-            return;
+            //return;
 
             // Choose encoding of your file: default is UTF-8
             // var encoding = Encoding.GetEncoding("windows-1251");
-            var encoding = Encoding.GetEncoding("utf-8");
+            //var encoding = Encoding.GetEncoding("utf-8");
             //ProcessFile(@"..\..\test.txt", @"..\..\test_processed.txt",encoding);
-            ProcessFile(@"..\..\test_processed.txt", @"..\..\test2.txt", encoding);
+            //ProcessFile(@"..\..\test_processed.txt", @"..\..\test2.txt", encoding);
         }
 
         private static void Process2(string sourceFilename, string destinationFilename, Encoding encoding = null)
@@ -76,13 +76,18 @@ namespace TextProcessor
         /// </summary>
         /// <param name="sourceFilename">File to be processed</param>
         /// <param name="destinationFilename">Result will be saved in this file</param>
-        static void ProcessFile(string sourceFilename, string destinationFilename, Encoding encoding = null)
+        static void ProcessFile(string sourceFilename, Encoding encoding = null)
         {
+            string destinationFilename = Path.Combine(
+                Path.GetDirectoryName(sourceFilename),
+                Path.GetFileNameWithoutExtension(sourceFilename) + "_processed"+
+                Path.GetExtension(sourceFilename));
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var source = File.ReadAllText(sourceFilename, encoding);
             //var text = MakeEquationWithLabelsFromDollars(source,"kad-ito");
-            var text = CommonProcessor.MakeDollarsFromEquationWithLabels(source);
+            //var text = CommonProcessor.MakeDollarsFromEquationWithLabels(source);
+            var text = CommonProcessor.ArrangeCites(source);
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Замечание (\d*).*}", "%e", "замечани", "remark", n => "kad-ito:"+n);
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Определение ((\d|\.)*).*?}", "%e", "определени", "definition", n => "sirazh2:" + n);
             File.WriteAllText(destinationFilename, text, encoding);

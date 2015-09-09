@@ -8,6 +8,14 @@ namespace TextProcessor.Latex
         public TextBlock ClosingBlock { get; set; }
         public string Name { get; set; }
 
+
+        public Environment(TextBlock openingBlock, TextBlock closingBlock, string name)
+        {
+            OpeningBlock = openingBlock;
+            ClosingBlock = closingBlock;
+            Name = name;
+        }
+
         public Environment(int openStart, string openContent, int closeStart, string closeContent, string name)
         {
             OpeningBlock = new TextBlock(openStart,openContent);

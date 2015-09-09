@@ -41,14 +41,14 @@ namespace Tests
 
         [Test]
         public void GetEnvironmentTest()
-        { 
+        {
             string text = @"\begin{equation*}
                               \|f\|_{p(\cdot),w} \le r_{p,q}^w \|f\|_{q(\cdot),w},
                             \end{equation*}";
             string actual = Utils.GetEnvironmentName(text, 20).Content;
             string expected = "equation*";
 
-            Assert.AreEqual(expected,actual);
+            Assert.AreEqual(expected, actual);
         }
 
 
@@ -113,7 +113,7 @@ namespace Tests
             };
 
             Assert.AreEqual(expected, actual);
-            
+
         }
 
         [Test]
@@ -131,7 +131,7 @@ namespace Tests
                 new Eqref(277,@"\eqref{sobolevProofMain}")
             };
 
-            Assert.AreEqual(expected,eqrefs);
+            Assert.AreEqual(expected, eqrefs);
         }
 
         [Test]
@@ -172,8 +172,8 @@ CCC
 DDD
 \end{theorem}";
             var sb = new StringBuilder(text);
-            Utils.RenameEnvs(ref sb,"lemma",@"\textbf{Лемма #counter#.}\textit{","}");
-            Assert.AreEqual(expected,sb.ToString());
+            Utils.RenameEnvs(ref sb, "lemma", @"\textbf{Лемма #counter#.}\textit{", "}");
+            Assert.AreEqual(expected, sb.ToString());
 
         }
 
@@ -215,7 +215,7 @@ CCC
 DDD
 \end{theorem}";
             var sb = new StringBuilder(text);
-            Utils.RenameEnvs(ref sb, "lemma", @"\textbf{Лемма #counter#.}\textit{", "}", i=>new[]{"A","B","C"}[i-1]);
+            Utils.RenameEnvs(ref sb, "lemma", @"\textbf{Лемма #counter#.}\textit{", "}", i => new[] { "A", "B", "C" }[i - 1]);
             Assert.AreEqual(expected, sb.ToString());
 
         }
@@ -236,7 +236,7 @@ DDD
 3abc
 4abc
 5abc";
-            Assert.AreEqual(expected,sb.ToString());
+            Assert.AreEqual(expected, sb.ToString());
         }
 
         [Test]
@@ -244,7 +244,7 @@ DDD
         {
             string text = "1abc\r\n2abc\r\n3abc\r\n4abc";
             int line = Utils.FindLine(text, 6);
-            Assert.AreEqual(1,line);
+            Assert.AreEqual(1, line);
 
             line = Utils.FindLine(text, 1);
             Assert.AreEqual(0, line);
@@ -260,8 +260,8 @@ DDD
             string startRegexp = " |~";
             string endRegexp = @" |\d|,|~|и|-";
             var tb = Utils.ExtractBlock(text, 15, startRegexp, endRegexp);
-            Assert.AreEqual(tb.StartPos,17);
-            Assert.AreEqual(tb.EndPos, 27); 
+            Assert.AreEqual(tb.StartPos, 17);
+            Assert.AreEqual(tb.EndPos, 27);
         }
 
         [Test]
@@ -275,5 +275,95 @@ DDD
             Assert.AreEqual(tb.EndPos, 31);
         }
 
+        [Test]
+        public void FindEnvTest()
+        {
+            string text =
+                @"Some text
+\begin{theorem}{12}\label{th}
+Theorem statement
+
+\end{theorem}#
+
+Another text...
+";
+            var env = Utils.FindEnv(text, "theorem");
+            Assert.AreEqual(text.IndexOf(@"\begin"),env.OpeningBlock.StartPos);
+            Assert.AreEqual(text.IndexOf(@"{12}")-1, env.OpeningBlock.EndPos);
+            Assert.AreEqual(text.IndexOf(@"\end"), env.ClosingBlock.StartPos);
+            Assert.AreEqual(text.IndexOf(@"#")-1, env.ClosingBlock.EndPos);
+        }
+
+        [Test]
+        public void GetBibitemsTest()
+        {
+            string text =
+                @"
+Text before...
+\begin{thebibliography}{46}
+
+\bibitem{1} Malvar H.S. Signal processing with lapped transforms. Artech House. Boston{ $\cdot$} London. 1992.
+
+\bibitem{2}  Mukundan R., Ramakrishnan K.R. Moment functions in image analysis. Theory and Applications.World Scientific. Pablishing Co. Pte. Ltd. 1998.
+
+
+\bibitem{3} Дедус Ф.Ф., Махортых С.А., Устинин М.Н., Дедус А.Ф. Обобщенный спектрально-аналитический метод обработки информационных массивов. Задачи анализа изображений и распознавания образов. -- М. ""Машиностроение"". 1999.
+
+\bibitem{4}
+            Фрейзер М. Введение в вэйвлеты в свете линейной алгебры.БИНОМ.Лаборатория знаний. --М. 2008.
+
+\end{thebibliography}
+Text after...
+";
+
+            var env = Utils.FindEnv(text, "thebibliography");
+            var bibitems = Utils.GetBibitems(text, env);
+
+            Assert.AreEqual(4, bibitems.Count);
+            for (int i = 0; i < 3; i++)
+            {
+                Assert.That(bibitems[i].Key == (i+1).ToString());
+            }
+
+            Assert.AreEqual(
+@" Malvar H.S. Signal processing with lapped transforms. Artech House. Boston{ $\cdot$} London. 1992.
+
+", bibitems[0].FullTitle);
+
+            Assert.AreEqual(
+@"
+            Фрейзер М. Введение в вэйвлеты в свете линейной алгебры.БИНОМ.Лаборатория знаний. --М. 2008.
+
+", bibitems[3].FullTitle);
+
+        }
+
+        [Test]
+        public void GetCitesTest()
+        {
+            var text =
+                @"
+\vspace{0.5cm}
+{\bf 4.1. Цель и задачи фундаментального исследования}
+\vspace{0.3cm}
+
+Проект направлен на решение фундаментальной проблемы об исследовании новых методов теории приближения функций,
+связанных с решением ряда актуальных современных задач, возникающих в таких областях, как обработка и сжатие временных рядов и изображений \cite{1,2,3,4}, приближенное решение систем нелинейных дифференциальных  и разностных уравнений численно-аналитическими методами \cite{5,6,7,8}, численное обращение преобразования Радона \cite{9,10},  идентификация линейных и нелинейных систем автоматического регулирования и управления \cite{11,12}  и других. (Числа в квадратных скобках означают ссылки на литературу, приведенную для удобства чтения в конце настоящего пункта.)
+
+";
+            var cites = Utils.GetCites(text);
+            Assert.That(cites.Count == 4);
+
+            Assert.AreEqual(4, cites[0].Keys.Count);
+            Assert.AreEqual(4, cites[1].Keys.Count);
+            Assert.AreEqual(2, cites[2].Keys.Count);
+            Assert.AreEqual(2, cites[3].Keys.Count);
+
+            CollectionAssert.AreEqual(new[] {"1","2","3","4"}, cites[0].Keys);
+            CollectionAssert.AreEqual(new[] { "11", "12" }, cites[3].Keys);
+
+            Assert.AreEqual(text.IndexOf(@"\cite"),cites[0].Block.StartPos);
+
+        }
     }
 }

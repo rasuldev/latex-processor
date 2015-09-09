@@ -10,10 +10,17 @@ namespace TextProcessor.Latex
         public TextBlock Block { get; set; }
         public List<string> Keys { get; set; }
 
-        public Cite(TextBlock block, List<string> keys)
+        public Cite(TextBlock block, IEnumerable<string> keys)
         {
             Block = block;
-            Keys = keys;
+            Keys = keys.ToList();
+        }
+
+        public Cite(int start, string content)
+        {
+            Block = new TextBlock(start, content);
+            var keysRaw = Utils.HarvestParams(content, 1, 1).ParamsList[0];
+            Keys = keysRaw.Split(',').Select(k => k.Trim()).ToList();
         }
 
         public override bool Equals(object obj)
@@ -24,9 +31,14 @@ namespace TextProcessor.Latex
             return Keys.SequenceEqual(another.Keys) && Block.Equals(another.Block);
         }
 
+        public override string ToString()
+        {
+            return GenerateMarkup(Keys);
+        }
+
         public static string GenerateMarkup(IEnumerable<string> keys)
         {
-            return @"\cite{" + String.Join(",", keys) + "}";
+            return @"\cite{" + String.Join(", ", keys) + "}";
         }
     }
 }

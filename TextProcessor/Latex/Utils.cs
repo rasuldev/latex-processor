@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -380,6 +381,79 @@ namespace TextProcessor.Latex
         {
             public IList<string> ParamsList { get; set; }
             public int EndPos { get; set; }
+        }
+
+        public static Environment FindEnv(string text, string envName)
+        {
+            var start = FindOneParamCommandWithValue(text, "begin", envName);
+            var end = FindOneParamCommandWithValue(text, "end", envName);
+            return new Environment(start, end, envName);
+        }
+
+        public static List<Bibitem> GetBibitems(string text, Environment bibEnv)
+        {
+            var bibitems = new List<Bibitem>();
+            Command cmd;
+            int start = bibEnv.OpeningBlock.EndPos + 1;
+            while ((cmd = FindOneParamCommand(text, "bibitem", start)) != null)
+            {
+                if (cmd.Block.EndPos > bibEnv.ClosingBlock.StartPos)
+                    break;
+
+                int endTitlePos = text.IndexOf(@"\bibitem", cmd.Block.EndPos + 1);
+                if (endTitlePos == -1)
+                    endTitlePos = text.IndexOf(@"\end", cmd.Block.EndPos + 1);
+                string title = text.Substring(cmd.Block.EndPos + 1, endTitlePos - cmd.Block.EndPos - 1);
+                bibitems.Add(new Bibitem(
+                    new TextBlock(text, cmd.Block.StartPos, endTitlePos), cmd.Params[0], title));
+
+                start = endTitlePos;
+                if (start > bibEnv.ClosingBlock.StartPos)
+                    break;
+            }
+            return bibitems;
+
+            //var envInnerText = text.Substring(bibEnv.OpeningBlock.EndPos + 1, bibEnv.ClosingBlock.StartPos - 1);
+            //var bibitemsRaw = envInnerText.Split(new[] { @"\bibi" }, StringSplitOptions.None)
+            //    .Where(b => b.StartsWith("tem"))
+            //    .Select(b => @"\bibi" + b);
+            //foreach (var item in bibitemsRaw)
+            //{
+            //    var info = HarvestParams(item, 1, 1);
+            //    bibitems.Add(new Bibitem());
+            //}
+        }
+
+        public static List<Cite> GetCites(string text)
+        {
+            var cites = new List<Cite>();
+            Command cmd = FindOneParamCommand(text, "cite", 0);
+            while (cmd != null)
+            {
+                cites.Add(new Cite(cmd.Block.StartPos, cmd.Block.Content));
+                cmd = FindOneParamCommand(text, "cite", cmd.Block.EndPos + 1);
+            }
+            return cites;
+        }
+
+        public static Command FindOneParamCommand(string text, string commandName, int start)
+        {
+            var match = Regex.Match(text.Substring(start), $@"\\{commandName}[^{{]*?{{([^}}]*?)}}");
+            if (!match.Success)
+                return null;
+
+            return new Command(start + match.Index, match.Value, 1);
+        }
+
+        public static TextBlock FindOneParamCommandWithValue(string text, string commandName, string paramValue)
+        {
+            string pattern = $@"\\{commandName}[^{{]*?{{[^}}]*?{paramValue}[^}}]*?}}";
+            var match = Regex.Match(text, pattern);
+            if (!match.Success)
+                return null;
+            var start = match.Index;
+            var end = match.Index + match.Length - 1;
+            return new TextBlock(text, start, end);
         }
 
         class EnvironmentBound
