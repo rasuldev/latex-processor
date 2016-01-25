@@ -78,6 +78,13 @@ namespace TextProcessor.Latex
                 // on every iteration we find closest environment bound item (\begin or \end)
                 envStartPos = text.LastIndexOf(@"\begin", pos, System.StringComparison.Ordinal);
                 envEndPos = text.LastIndexOf(@"\end", pos, System.StringComparison.Ordinal);
+
+                // case when label was not inside of the environment
+                // for example, \section{Sec1}\label{sec}
+                // TODO: Fix to properly handle labels outside the environments
+                if (envStartPos == -1)
+                    return null;
+
                 if (envEndPos > envStartPos)
                 {
                     // move to found bound item
@@ -111,14 +118,14 @@ namespace TextProcessor.Latex
         public static IList<Label> GetLabels(string text)
         {
             List<Label> labels = new List<Label>();
-            var matches = Regex.Matches(text, @"\\label(?:.|\r?\n)*?\{(.+?)\}");
+            var matches = Regex.Matches(text, @"\\label(?:\s|\r?\n)*?\{(.+?)\}");
             foreach (Match match in matches.OfType<Match>())
             {
                 if (IsComment(text, match.Index))
                     continue;
                 var label = new Label(match.Index, match.Value);
                 label.Name = match.Groups[1].Value;
-                label.EnvironmentName = GetEnvironmentName(text, match.Index).Content;
+                label.EnvironmentName = GetEnvironmentName(text, match.Index)?.Content;
                 labels.Add(label);
             }
             return labels;
@@ -156,10 +163,7 @@ namespace TextProcessor.Latex
         /// <param name="format">#name#</param>
         public static void RenameLabels(ref StringBuilder sb, string format)
         {
-            var labels = Utils.GetLabels(sb.ToString()).Where(l =>
-                l.EnvironmentName != "lemma" && l.EnvironmentName != "lemmaA" &&
-                l.EnvironmentName != "theorem" && l.EnvironmentName != "theoremA" &&
-                l.EnvironmentName != "enumerate").ToList();
+            var labels = Utils.GetLabels(sb.ToString()).ToList();
 
             Dictionary<string, string> labelsOldNew = new Dictionary<string, string>();
             var eqNumber = labels.Count;
@@ -182,6 +186,18 @@ namespace TextProcessor.Latex
                 {
                     sb.Remove(eqref.Block.StartPos, eqref.Block.Length);
                     sb.Insert(eqref.Block.StartPos, Eqref.GenerateMarkup(labelsOldNew[eqref.Value]));
+                }
+            }
+
+            // replaces labels in refs
+            var refs = Utils.GetRefs(sb.ToString());
+            foreach (var reff in refs.OrderByDescending(e => e.Block.StartPos))
+            {
+
+                if (labelsOldNew.ContainsKey(reff.Value))
+                {
+                    sb.Remove(reff.Block.StartPos, reff.Block.Length);
+                    sb.Insert(reff.Block.StartPos, Ref.GenerateMarkup(labelsOldNew[reff.Value]));
                 }
             }
 
