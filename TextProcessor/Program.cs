@@ -12,6 +12,12 @@ namespace TextProcessor
     {
         static void Main(string[] args)
         {
+            MergeBib(new []
+            {
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\biblios\biblio2.tex",
+
+            });
+
 
             //Process2(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\Magomed-Kasumov.tex",
             //    @"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\processing\Magomed-Kasumov.tex",
@@ -21,9 +27,13 @@ namespace TextProcessor
             //         @"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG_p.tex",
             //    Encoding.GetEncoding("windows-1251"));
 
-            ProcessFile(
-                @"g:\Dropbox\INFO_BASE\DOCS\000 делопроизводство\001 Grants\Проект РФФИ 2016\ПроектРФФИ_2016до2018_Form4.tex",
-                Encoding.GetEncoding("windows-1251"));
+            //ProcessFile(
+            //    @"g:\Dropbox\INFO_BASE\DOCS\000 делопроизводство\001 Grants\Проект РФФИ 2016\ПроектРФФИ_2016до2018_Form4.tex",
+            //    Encoding.GetEncoding("windows-1251"));
+
+            //ProcessFile(
+            //    @"d:\Dropbox\~INFO_BASE_EXT\000 DOC SRW\Rasul\Статьи\Специальные ряды sigma rr\article.tex", Encoding.GetEncoding("windows-1251"));
+
             //ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки main — копия.tex", @"D:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки mainEq.tex", Encoding.GetEncoding("windows-1251"));
 
             //return;
@@ -33,6 +43,34 @@ namespace TextProcessor
             //var encoding = Encoding.GetEncoding("utf-8");
             //ProcessFile(@"..\..\test.txt", @"..\..\test_processed.txt",encoding);
             //ProcessFile(@"..\..\test_processed.txt", @"..\..\test2.txt", encoding);
+        }
+
+        private static void MergeBib(string[] filenames, Encoding encoding = null)
+        {
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+
+            List<string> sources = filenames.Select(f => File.ReadAllText(f, encoding)).ToList();
+            sources = CommonProcessor.MergeBibitemsAndReplaceCites(sources);
+            for (int i = 0; i < sources.Count; i++)
+            {
+                File.WriteAllText(GetProcessedFilename(filenames[i]), sources[i]);
+            }
+        }
+
+
+
+        private static void Process3(string sourceFilename, Encoding encoding = null)
+        {
+            string destinationFilename = Path.Combine(
+                Path.GetDirectoryName(sourceFilename),
+                Path.GetFileNameWithoutExtension(sourceFilename) + "_processed" +
+                Path.GetExtension(sourceFilename));
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+            var sb = new StringBuilder(File.ReadAllText(sourceFilename, encoding));
+            Utils.RenameLabels(ref sb, "chap1-mmg-#name#");
+            File.WriteAllText(destinationFilename, sb.ToString(), encoding);
         }
 
         private static void Process2(string sourceFilename, string destinationFilename, Encoding encoding = null)
@@ -85,14 +123,21 @@ namespace TextProcessor
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var source = File.ReadAllText(sourceFilename, encoding);
-            //var text = MakeEquationWithLabelsFromDollars(source,"kad-ito");
+            var text = CommonProcessor.MakeEquationWithLabelsFromDollars(source,"eq");
             //var text = CommonProcessor.MakeDollarsFromEquationWithLabels(source);
-            var text = CommonProcessor.ArrangeCites(source);
+            //var text = CommonProcessor.ArrangeCites(source);
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Замечание (\d*).*}", "%e", "замечани", "remark", n => "kad-ito:"+n);
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Определение ((\d|\.)*).*?}", "%e", "определени", "definition", n => "sirazh2:" + n);
             File.WriteAllText(destinationFilename, text, encoding);
         }
 
+        private static string GetProcessedFilename(string filename)
+        {
+            return Path.Combine(
+                            Path.GetDirectoryName(filename),
+                            Path.GetFileNameWithoutExtension(filename) + "_processed" +
+                            Path.GetExtension(filename));
+        }
        
     }
 }

@@ -194,7 +194,7 @@ namespace TextProcessor
             var sb = new StringBuilder(textBlock);
             foreach (var item in refs)
             {
-                sb = sb.Replace(item, String.Format(@"\ref{{{0}}}", labelForRef(item)));
+                sb = sb.Replace(item, $@"\ref{{{labelForRef(item)}}}");
             }
 
             return sb.ToString();
@@ -215,6 +215,120 @@ namespace TextProcessor
                 }
             }
 
+        }
+
+        /// <summary>
+        /// It's supposed that among sources there is a source with thebibliography environment. 
+        /// This env will be processed first. Then all cites in sources will be modified correspondingly.
+        /// </summary>
+        /// <param name="sources"></param>
+        /// <returns></returns>
+        public static List<string> MergeBibitemsAndReplaceCites(IList<string> sources)
+        {
+            // find thebibliography env
+            Tuple<string, Dictionary<string, string>> mergeResult = null;
+            var modSources = new List<string>(sources);
+            for (int i = 0; i < modSources.Count; i++)
+            {
+                var source = sources[i];
+                if (source.Contains("thebibliography"))
+                {
+                    mergeResult = MergeBibitems(source);
+                    modSources[i] = mergeResult.Item1;
+                    break;
+                }
+            }
+
+            if (mergeResult == null)
+                throw new Exception("thebibliography environment not found");
+
+            var newKeysFor = mergeResult.Item2;
+            for (int i = 0; i < modSources.Count; i++)
+            {
+                var source = modSources[i];
+                modSources[i] = ReplaceCitesKeys(source, newKeysFor);
+            }
+            return modSources;
+        }
+
+        private static string ReplaceCitesKeys(string source, Dictionary<string, string> newKeysFor)
+        {
+            var cites = Utils.GetCites(source);
+            var sb = new StringBuilder(source);
+            foreach (var cite in cites.OrderByDescending(c => c.Block.StartPos))
+            {
+                cite.Keys = cite.Keys.Select(k => newKeysFor[k] ?? k).ToList();
+                sb = sb.Remove(cite.Block.StartPos, cite.Block.EndPos - cite.Block.StartPos + 1)
+                       .Insert(cite.Block.StartPos, cite.ToString());
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Finds identical bibitems and merges them
+        /// </summary>
+        /// <returns>
+        /// New merged list of bibitems as string and 
+        /// correspondence between original keys and new keys:
+        /// result.Item2['oldKey'] returns key of bibitem from merged list
+        /// </returns>
+        public static Tuple<string, Dictionary<string, string>> MergeBibitems(string text)
+        {
+            var bibenv = Utils.FindEnv(text, "thebibliography");
+            var bibitems = Utils.GetBibitems(text, bibenv);
+
+            // Make groups: each group contains identical bibitems
+            var groups = bibitems.GroupBy(b => ExtractComparablePart(b.FullTitle));
+            var keysOldNew = new Dictionary<string, string>();
+            var filteredBibitems = new List<Bibitem>();
+
+            foreach (var g in groups)
+            {
+                // Take one (first) bibitem from all groups
+                var bibitem = g.First();
+                filteredBibitems.Add(bibitem);
+
+                // Make correspondence for keys from groups to first bibitem key
+                foreach (var item in g)
+                {
+                    keysOldNew[item.Key] = bibitem.Key;
+                }
+
+            }
+            var biblistStr = String.Join("\r\n", filteredBibitems);
+            text = text.Remove(bibenv.OpeningBlock.EndPos + 1,
+                        bibenv.ClosingBlock.StartPos - bibenv.OpeningBlock.EndPos - 1)
+                        .Insert(bibenv.OpeningBlock.EndPos + 1, biblistStr);
+            
+            return Tuple.Create(text, keysOldNew);
+        }
+
+        /// <summary>
+        /// Extracts authors' lastnames and title as one string and 
+        /// filters this string removing 
+        /// 1) punctuation marks (replaces it for spaces)
+        /// 2) words with length less than 4 chars (authors' initials, prepositions etc.)
+        /// </summary>
+        /// <param name="bibentry"></param>
+        /// <returns></returns>
+        public static string ExtractComparablePart(string bibentry)
+        {
+            string essence;
+            if (bibentry.Contains("//"))
+            {
+                // this is an article
+                essence = bibentry.Split(new[] { "//" }, StringSplitOptions.RemoveEmptyEntries)[0];
+            }
+            else
+            {
+                essence = bibentry.Substring(0, 60);
+            }
+
+            essence = essence.Replace('.', ' ').Replace(',', ' ').Replace("\n", "").Replace("\r", "");
+            var words = essence.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(w => w.Length > 3);
+            essence = String.Join(" ", words).Trim();
+            return essence;
         }
 
         public static string ArrangeCites(string text)
@@ -261,7 +375,7 @@ namespace TextProcessor
 
             foreach (var cite in cites)
             {
-                cite.Keys = cite.Keys.Select(k => newKeyFor[k].ToString()).ToList();                
+                cite.Keys = cite.Keys.Select(k => newKeyFor[k].ToString()).ToList();
             }
 
             foreach (var bibitem in bibitems)
@@ -275,7 +389,7 @@ namespace TextProcessor
             sb.Remove(bibenv.OpeningBlock.EndPos + 1, bibenv.ClosingBlock.StartPos - bibenv.OpeningBlock.EndPos - 1);
 
             var sbBibInner = new StringBuilder();
-            foreach (var item in bibitems.OrderBy(b=>int.Parse(b.Key)))
+            foreach (var item in bibitems.OrderBy(b => int.Parse(b.Key)))
             {
                 sbBibInner.AppendLine(item.ToString());
             }
@@ -283,7 +397,7 @@ namespace TextProcessor
             sb.Insert(bibenv.OpeningBlock.EndPos + 1, sbBibInner.ToString());
 
             // change cites
-            foreach (var cite in cites.OrderByDescending(c=>c.Block.StartPos))
+            foreach (var cite in cites.OrderByDescending(c => c.Block.StartPos))
             {
                 Utils.RemoveBlock(sb, cite.Block);
                 sb.Insert(cite.Block.StartPos, cite.ToString());

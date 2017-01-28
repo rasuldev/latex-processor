@@ -402,6 +402,7 @@ namespace TextProcessor.Latex
         public static Environment FindEnv(string text, string envName)
         {
             var start = FindOneParamCommandWithValue(text, "begin", envName);
+            if (start == null) return null;
             var end = FindOneParamCommandWithValue(text, "end", envName);
             return new Environment(start, end, envName);
         }
