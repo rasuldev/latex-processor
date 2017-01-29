@@ -12,10 +12,22 @@ namespace TextProcessor
     {
         static void Main(string[] args)
         {
+            // TODO: skip commented lines
             MergeBib(new []
             {
                 @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\biblios\biblio2.tex",
-
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\intros\intro2.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\AGG12.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\haar-tcheb.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\meixner.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\ramazanov.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\SMS12.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\SMS13.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\sob-jac-discrete.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\sob-lag-sb.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\sob-lag-smj.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\sob-leg.tex",
+                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\sob-tcheb-difference.tex"
             });
 
 

@@ -257,7 +257,16 @@ namespace TextProcessor
             var sb = new StringBuilder(source);
             foreach (var cite in cites.OrderByDescending(c => c.Block.StartPos))
             {
-                cite.Keys = cite.Keys.Select(k => newKeysFor[k] ?? k).ToList();
+                cite.Keys = cite.Keys.Select(k =>
+                {
+                    if (newKeysFor.ContainsKey(k))
+                        return newKeysFor[k];
+                    else
+                    {
+                        Console.WriteLine($"Warning: not correspondence for bibkey {k}");
+                        return k;
+                    }
+                }).ToList();
                 sb = sb.Remove(cite.Block.StartPos, cite.Block.EndPos - cite.Block.StartPos + 1)
                        .Insert(cite.Block.StartPos, cite.ToString());
             }
@@ -296,6 +305,8 @@ namespace TextProcessor
 
             }
             var biblistStr = String.Join("\r\n", filteredBibitems);
+            // TODO: thebibliography has one params so we should remove not from bibenv.OpeningBlock.EndPos + 1
+            // or we have to detect bibenv.OpeningBlock.EndPos more accurate taking into account one param
             text = text.Remove(bibenv.OpeningBlock.EndPos + 1,
                         bibenv.ClosingBlock.StartPos - bibenv.OpeningBlock.EndPos - 1)
                         .Insert(bibenv.OpeningBlock.EndPos + 1, biblistStr);
@@ -324,7 +335,8 @@ namespace TextProcessor
                 essence = bibentry.Substring(0, 60);
             }
 
-            essence = essence.Replace('.', ' ').Replace(',', ' ').Replace("\n", "").Replace("\r", "");
+            essence = essence.Replace('.', ' ').Replace(',', ' ').Replace("\n", "").Replace("\r", "")
+                .Replace('~',' ');
             var words = essence.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(w => w.Length > 3);
             essence = String.Join(" ", words).Trim();

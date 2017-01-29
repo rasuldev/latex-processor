@@ -11,6 +11,24 @@ namespace Tests
     public class CommonProcessorTests
     {
         [Test]
+        public void MergeBibitems2Test()
+        {
+            var source =
+@"
+\begin{thebibliography}{1}
+\bibitem{Haar-Tcheb-Shar15}
+ И.И. Шарапудинов. Аппроксимативные свойства смешанных рядов по полиномам Лежандра на классах $W^r$ // Математический сборник. 2006. Том 197. Вып. 3. С. 135–154.
+
+\bibitem{meixner-13}
+ Шарапудинов~И.~И. Аппроксимативные свойства смешанных рядов по полиномам Лежандра на классах $W^r$ // Математический сборник, 2006, т. 197, №~3, C.~135-154. DOI: 10.4213/sm1539
+
+\end{thebibliography}
+";
+
+            var result = CommonProcessor.MergeBibitems(source);
+        }
+
+        [Test]
         public void MergeBibitemsTest()
         {
             var source =

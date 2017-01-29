@@ -456,6 +456,12 @@ namespace TextProcessor.Latex
         public static Command FindOneParamCommand(string text, string commandName, int start)
         {
             var match = Regex.Match(text.Substring(start), $@"\\{commandName}[^{{]*?{{([^}}]*?)}}");
+            // check if found command is commented out and skip if it is
+            while (match.Success && IsComment(text, start + match.Index))
+            {
+                match = match.NextMatch();
+            }
+
             if (!match.Success)
                 return null;
 
