@@ -336,10 +336,10 @@ namespace TextProcessor
             }
 
             essence = essence.Replace('.', ' ').Replace(',', ' ').Replace("\n", "").Replace("\r", "")
-                .Replace('~',' ');
+                .Replace('~',' ').Replace('{', ' ').Replace('}', ' ');
             var words = essence.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(w => w.Length > 3);
-            essence = String.Join(" ", words).Trim();
+            essence = String.Join(" ", words).Trim().ToLower();
             return essence;
         }
 

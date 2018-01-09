@@ -13,26 +13,21 @@ namespace TextProcessor
         static void Main(string[] args)
         {
             // TODO: skip commented lines
-            MergeBib(new []
+            MergeBib(new[]
             {
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\biblios\biblio2.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\intros\intro2.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\AGG12.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\haar-tcheb.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\meixner.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\ramazanov.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\SMS12.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\SMS13.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\sob-jac-discrete.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\sob-lag-sb.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\sob-lag-smj.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\sob-leg.tex",
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2016\reportnir2016\chapters\chapter2\sob-tcheb-difference.tex"
-            });
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\biblio.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\Отчет2017закл.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-cheb-discrete.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-spec-leg.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-lpx.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-meixner.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-vp.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-jacobi-common.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-fejer.tex"
+            }, Encoding.GetEncoding("windows-1251"));
 
 
-            //Process2(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\Magomed-Kasumov.tex",
-            //    @"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Rasul\Статьи\Скорость сходимости сумм Фурье-Хаара в весовых пространствах Лебега\Оформление\processing\Magomed-Kasumov.tex",
+            //Process3(@"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-lpx.tex",
             //    Encoding.GetEncoding("windows-1251"));
 
             //Process2(@"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG.tex",
@@ -66,7 +61,7 @@ namespace TextProcessor
             sources = CommonProcessor.MergeBibitemsAndReplaceCites(sources);
             for (int i = 0; i < sources.Count; i++)
             {
-                File.WriteAllText(GetProcessedFilename(filenames[i]), sources[i]);
+                File.WriteAllText(GetProcessedFilename(filenames[i]), sources[i], encoding);
             }
         }
 
@@ -81,7 +76,7 @@ namespace TextProcessor
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var sb = new StringBuilder(File.ReadAllText(sourceFilename, encoding));
-            Utils.RenameLabels(ref sb, "chap1-mmg-#name#");
+            Utils.RenameLabels(ref sb, "lpx-#name#");
             File.WriteAllText(destinationFilename, sb.ToString(), encoding);
         }
 
@@ -130,12 +125,12 @@ namespace TextProcessor
         {
             string destinationFilename = Path.Combine(
                 Path.GetDirectoryName(sourceFilename),
-                Path.GetFileNameWithoutExtension(sourceFilename) + "_processed"+
+                Path.GetFileNameWithoutExtension(sourceFilename) + "_processed" +
                 Path.GetExtension(sourceFilename));
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var source = File.ReadAllText(sourceFilename, encoding);
-            var text = CommonProcessor.MakeEquationWithLabelsFromDollars(source,"eq");
+            var text = CommonProcessor.MakeEquationWithLabelsFromDollars(source, "eq");
             //var text = CommonProcessor.MakeDollarsFromEquationWithLabels(source);
             //var text = CommonProcessor.ArrangeCites(source);
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Замечание (\d*).*}", "%e", "замечани", "remark", n => "kad-ito:"+n);
@@ -147,9 +142,9 @@ namespace TextProcessor
         {
             return Path.Combine(
                             Path.GetDirectoryName(filename),
-                            Path.GetFileNameWithoutExtension(filename) + "_processed" +
+                            Path.GetFileNameWithoutExtension(filename) + //"_processed" +
                             Path.GetExtension(filename));
         }
-       
+
     }
 }
