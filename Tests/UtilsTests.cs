@@ -365,5 +365,33 @@ Text after...
             Assert.AreEqual(text.IndexOf(@"\cite"),cites[0].Block.StartPos);
 
         }
+
+        [Test]
+        public void RenameCitesTest()
+        {
+            var sb = new StringBuilder(@"
+\vspace{0.5cm}
+{\bf 4.1. Цель и задачи фундаментального исследования}
+\vspace{0.3cm}
+Проект направлен на решение фундаментальной проблемы об исследовании новых методов теории приближения функций,
+связанных с решением ряда актуальных современных задач, возникающих в таких областях, как обработка и сжатие 
+временных рядов и изображений \cite{1,2,3,4}, приближенное решение систем нелинейных дифференциальных  и 
+разностных уравнений численно-аналитическими методами \cite{5,6,7,8}, численное обращение преобразования 
+Радона \cite{9,10},  идентификация линейных и нелинейных систем автоматического регулирования и управления 
+\cite{11,12}, \cite{kolmogorov} и других. (Числа в квадратных скобках означают ссылки на литературу, 
+приведенную для удобства чтения в конце настоящего пункта.)
+");
+            Utils.RenameCites(ref sb, key => $"prefix-{key}");
+            var newText = sb.ToString();
+            var cites = Utils.GetCites(newText);
+            Assert.AreEqual(5, cites.Count);
+            foreach (var cite in cites)
+            {
+                Assert.That(cite.Keys.All(k => k.StartsWith("prefix-")));
+            }
+
+            Assert.AreEqual(13, cites.Sum(c => c.Keys.Count));
+
+        }
     }
 }

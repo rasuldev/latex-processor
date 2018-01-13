@@ -205,6 +205,23 @@ namespace TextProcessor.Latex
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="keyConverter">Converter that accepts current cite key as param and should return new key</param>
+        public static void RenameCites(ref StringBuilder sb, Func<string, string> keyConverter)
+        {
+            var cites = GetCites(sb.ToString());
+            foreach (var cite in cites.OrderByDescending(c => c.Block.StartPos))
+            {
+                var newKeys = cite.Keys.Select(keyConverter).ToList();
+                sb.Remove(cite.Block.StartPos, cite.Block.Length);
+                sb.Insert(cite.Block.StartPos, Cite.GenerateMarkup(newKeys));
+            }
+        }
+
+
+        /// <summary>
         /// It doesn't work for nested environments
         /// </summary>
         /// <param name="sb"></param>
@@ -478,6 +495,7 @@ namespace TextProcessor.Latex
             var end = match.Index + match.Length - 1;
             return new TextBlock(text, start, end);
         }
+
 
         class EnvironmentBound
         {

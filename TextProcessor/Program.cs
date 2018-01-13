@@ -13,22 +13,22 @@ namespace TextProcessor
         static void Main(string[] args)
         {
             // TODO: skip commented lines
-            MergeBib(new[]
-            {
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\biblio.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\Отчет2017закл.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-cheb-discrete.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-spec-leg.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-lpx.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-meixner.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-vp.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-jacobi-common.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-fejer.tex"
-            }, Encoding.GetEncoding("windows-1251"));
+            //MergeBib(new[]
+            //{
+            //    @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\biblio.tex",
+            //    @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\Отчет2017закл.tex",
+            //    @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-cheb-discrete.tex",
+            //    @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-spec-leg.tex",
+            //    @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-lpx.tex",
+            //    @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-meixner.tex",
+            //    @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-vp.tex",
+            //    @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-jacobi-common.tex",
+            //    @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-fejer.tex"
+            //}, Encoding.GetEncoding("windows-1251"));
 
 
-            //Process3(@"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-lpx.tex",
-            //    Encoding.GetEncoding("windows-1251"));
+            Process3(@"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-charlier.tex", "charlier-");
+            
 
             //Process2(@"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG.tex",
             //         @"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG_p.tex",
@@ -67,7 +67,7 @@ namespace TextProcessor
 
 
 
-        private static void Process3(string sourceFilename, Encoding encoding = null)
+        private static void Process3(string sourceFilename, string prefix, Encoding encoding = null)
         {
             string destinationFilename = Path.Combine(
                 Path.GetDirectoryName(sourceFilename),
@@ -76,7 +76,7 @@ namespace TextProcessor
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var sb = new StringBuilder(File.ReadAllText(sourceFilename, encoding));
-            Utils.RenameLabels(ref sb, "lpx-#name#");
+            Utils.RenameLabels(ref sb, $"{prefix}#name#");
             File.WriteAllText(destinationFilename, sb.ToString(), encoding);
         }
 
