@@ -220,6 +220,36 @@ namespace TextProcessor.Latex
             }
         }
 
+        /// <summary>
+        /// All bibitems should be contained in \begin{thebibliography}\end{thebibliography} environment.
+        /// Method will process only first.
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="keyConverter">Converter that accepts current cite key as param and should return new key</param>
+        public static void RenameBibitems(ref StringBuilder sb, Func<string, string> keyConverter)
+        {
+            var bibenv = FindEnv(sb.ToString(),"thebibliography");
+            if (bibenv == null)
+                throw new Exception("thebibliography environment not found");
+            RenameBibitems(ref sb, keyConverter, bibenv);
+        }
+
+        /// <summary>
+        /// Processes all bibitems inside given bibenv
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="keyConverter"></param>
+        /// <param name="bibenv"></param>
+        public static void RenameBibitems(ref StringBuilder sb, Func<string, string> keyConverter, Environment bibenv)
+        {
+            var bibitems = GetBibitems(sb.ToString(), bibenv);
+            foreach (var bibitem in bibitems.OrderByDescending(c => c.Block.StartPos))
+            {
+                sb.Remove(bibitem.Block.StartPos, bibitem.Block.Length);
+                sb.Insert(bibitem.Block.StartPos, Bibitem.GenerateMarkup(keyConverter(bibitem.Key), bibitem.FullTitle));
+            }
+        }
+
 
         /// <summary>
         /// It doesn't work for nested environments
@@ -439,7 +469,7 @@ namespace TextProcessor.Latex
                     endTitlePos = text.IndexOf(@"\end", cmd.Block.EndPos + 1);
                 string title = text.Substring(cmd.Block.EndPos + 1, endTitlePos - cmd.Block.EndPos - 1);
                 bibitems.Add(new Bibitem(
-                    new TextBlock(text, cmd.Block.StartPos, endTitlePos), cmd.Params[0], title));
+                    new TextBlock(text, cmd.Block.StartPos, endTitlePos-1), cmd.Params[0], title));
 
                 start = endTitlePos;
                 if (start > bibEnv.ClosingBlock.StartPos)

@@ -391,7 +391,49 @@ Text after...
             }
 
             Assert.AreEqual(13, cites.Sum(c => c.Keys.Count));
+        }
 
+        [Test]
+        public void RenameBibitemsTest()
+        {
+            var sb = new StringBuilder(@"
+\begin{thebibliography}{999}
+
+
+
+\bibitem{Shar1}
+Iserles~A., Koch~P.~E., Norsett~S.~P., Sanz-Serna~J.~M. On polynomials orthogonal with respect to certain Sobolev inner products~// J. Approx. Theory. 1991. Vol.~65. Iss.~2. Pp.~151--175. DOI: 10.1016/0021-9045(91)90100-O.
+\bibitem{Shar2}
+Marcellan~F., Alfaro~M., Rezola~M.~L. Orthogonal polynomials on Sobolev spaces: old and new directions~// J. Comput. Appl. Math. 1993. Vol.~48. Iss.~1--2. Pp.~113--131. DOI: 10.1016/0377-0427(93)90318-6.
+\bibitem{Shar3}
+Meijer~H.~G. Laguerre polynomials generalized to a certain discrete Sobolev inner product space~// J. Approx. Theory. 1993. Vol.~73. Iss.~1. Pp.~1--16. DOI: 10.1006/jath.1993.1029.
+\bibitem{Shar4}
+Kwon~K.~H., Littlejohn~L.~L. The orthogonality of the Laguerre polynomials $\{L_n^{(-k)}(x)\}$ for positive integers $k$~// Ann. Numer. Anal. 1995. Vol.~2. Pp.~289--303.
+\bibitem{Shar5}
+Kwon~K.~H., Littlejohn~L.~L. Sobolev orthogonal polynomials and second-order differential equations~// Rocky Mountain J. Math. 1998. Vol.~28. Pp.~547--594. DOI: 10.1216/rmjm/1181071786
+\bibitem{Shar6}
+Marcellan~F., Xu~Y. On Sobolev orthogonal polynomials~// arXiv:1403.6249v1 [math.CA]. 25~Mar~2014. 40~p.
+\bibitem{Shar7}
+Шарапудинов~И.~И., Гаджиева~З.~Д. Полиномы, ортогональные по Соболеву, порожденные многочленами Мейкснера~// Изв. Сарат. ун-та. Нов. cер. Сер. Математика. Механика. Информатика. 2016. Т.~16. Вып.~3. С.~310--321. DOI: 10.18500/1816-9791-2016-16-3-310-321.
+\bibitem{Shar8}
+Шарапудинов~И.~И. Смешанные ряды по ортогональным полиномам. Махачкалаю. Изд-во ДНЦ РАН. 2004.
+\bibitem{Shar9}
+Шарапудинов~И.~И. Многочлены, ортогональные на сетках. Махачкала. Изд-во Даг. гос. пед. ун-та. 1997.	
+\bibitem{Shar10}
+Бейтмен~Г., Эрдейи~А. Высшие трансцендентные функции. Том 2. Москва. Наука. 1974.
+
+
+\bibitem{Shar11}
+Ширяев~А.~Н. Вероятность-1. Москва. Изд-во МЦНМО. 2007.
+
+\end{thebibliography}
+
+");
+            Utils.RenameBibitems(ref sb, key => $"prefix-{key}");
+            var newText = sb.ToString();
+            var bibitems = Utils.GetBibitems(newText, Utils.FindEnv(newText, "thebibliography"));
+            Assert.AreEqual(11, bibitems.Count);
+            Assert.That(bibitems.All(b => b.Key.StartsWith("prefix-")));
         }
     }
 }
