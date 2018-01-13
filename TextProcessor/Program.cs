@@ -26,9 +26,10 @@ namespace TextProcessor
             //    @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-fejer.tex"
             //}, Encoding.GetEncoding("windows-1251"));
 
+            ArticlePreProcessing();
 
-            Process3(@"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-charlier.tex", "charlier-");
-            
+            RenameCitesAndBiblio(@"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-charlier.tex", "charlier-");
+
 
             //Process2(@"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG.tex",
             //         @"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG_p.tex",
@@ -50,6 +51,28 @@ namespace TextProcessor
             //var encoding = Encoding.GetEncoding("utf-8");
             //ProcessFile(@"..\..\test.txt", @"..\..\test_processed.txt",encoding);
             //ProcessFile(@"..\..\test_processed.txt", @"..\..\test2.txt", encoding);
+        }
+
+        private static void ArticlePreProcessing()
+        {
+            // add prefixes to formulas
+            // add prefixes to cites and biblio
+            // expand range cites (convert \cite{1} -- \cite{4} to \cite{1,2,3,4})
+            // merge cites (convert \cite{1}, \cite{2} to \cite{1,2})
+            // detect broken cites
+            // detect and drop unused biblio
+        }
+
+        private static void RenameCitesAndBiblio(string filename, string prefix, Encoding encoding = null)
+        {
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+            File.Copy(filename, GetBakFilename(filename));
+            var sb = new StringBuilder(File.ReadAllText(filename, encoding));
+            Utils.RenameCites(ref sb, key => prefix + key);
+            Utils.RenameBibitems(ref sb, key => prefix + key);
+            Utils.RenameRBibitems(ref sb, key => prefix + key);
+            File.WriteAllText(filename, sb.ToString(), encoding);
         }
 
         private static void MergeBib(string[] filenames, Encoding encoding = null)
@@ -138,11 +161,22 @@ namespace TextProcessor
             File.WriteAllText(destinationFilename, text, encoding);
         }
 
+
+        private static string GetBakFilename(string filename)
+        {
+            var i = 1;
+            string bakName;
+            while (File.Exists(bakName = filename + ".bak" + i))
+            {
+                ++i;
+            }
+            return bakName;
+        }
         private static string GetProcessedFilename(string filename)
         {
             return Path.Combine(
                             Path.GetDirectoryName(filename),
-                            Path.GetFileNameWithoutExtension(filename) + //"_processed" +
+                            Path.GetFileNameWithoutExtension(filename) + "_processed" +
                             Path.GetExtension(filename));
         }
 

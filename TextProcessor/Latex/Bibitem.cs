@@ -20,7 +20,7 @@
 
         public static string GenerateMarkup(string key, string fullTitle)
         {
-            return $"\\bibitem{{{key}}}\r\n{fullTitle}";
+            return $"\\bibitem{{{key}}}\r\n{fullTitle.TrimStart('\r','\n',' ')}";
         }
     }
 }

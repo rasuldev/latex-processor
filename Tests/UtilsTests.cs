@@ -435,5 +435,83 @@ Marcellan~F., Xu~Y. On Sobolev orthogonal polynomials~// arXiv:1403.6249v1 [math
             Assert.AreEqual(11, bibitems.Count);
             Assert.That(bibitems.All(b => b.Key.StartsWith("prefix-")));
         }
+
+        [Test]
+        public void RenameRBibitemsTest()
+        {
+            var sb = new StringBuilder(@"
+
+\RBibitem{TEL}
+\by С.\, А. Теляковский
+\paper Две теоремы о приближении функций алгебраическими многочленами
+\inbook Математический сборник
+\vol 70
+\issue 2
+\yr 1966
+\pages 252 -- 265
+
+
+\RBibitem{GOP}
+\by И.\, З. Гопенгауз
+\paper К теореме А. Ф. Тимана о приближении функций многочленами на
+конечном отрезке
+\inbook Математические  заметки
+\vol 1
+\issue 2
+\yr 1967
+\pages 163 -- 172
+
+
+
+
+
+\RBibitem{OSK}
+\by К.\, И. Осколков
+\paper К неравенству Лебега в равномерной метрике и на множестве полной меры
+\inbook Математические  заметки
+\vol 18
+\issue 4
+\yr 1975
+\pages 515 -- 526
+
+\RBibitem{sharap1}
+\by I.\,I. Sharapudinov
+\paper On the best approximation and polinomial of the least quadratic deviation
+\inbook Analysis Mathematica
+\vol 9
+\issue 3
+\yr 1983
+\pages 223 -- 234
+
+
+\RBibitem{sharap2}
+\by И.\,И. Шарапудинов
+\paper О наилучшем приближении и суммах Фурье-Якоби
+\inbook Математические заметки
+\vol 34
+\issue 5
+\yr 1983
+\pages 651 -- 661
+
+
+
+\RBibitem{Timan}
+\by А.Ф. Тиман
+\paper
+\inbook  Теория приближения функций действительного переменного
+\publ Физматгиз
+\yr 1960
+\pages
+\publaddr Москва
+
+
+
+");
+            Utils.RenameRBibitems(ref sb, key => $"prefix-{key}");
+            var newText = sb.ToString();
+            Assert.AreEqual(7, newText.Split('\n').Count(l => l.Contains("RBibitem")));
+            Assert.AreEqual(7, newText.Split('\n').Count(l => l.Contains("prefix-")));
+
+        }
     }
 }
