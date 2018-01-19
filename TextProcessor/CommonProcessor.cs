@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using TextProcessor.Latex;
+using Environment = TextProcessor.Latex.Environment;
 
 namespace TextProcessor
 {
@@ -343,7 +344,41 @@ namespace TextProcessor
             return essence;
         }
 
-        public static string ArrangeCites(string text)
+        /// <summary>
+        /// Reorders biblio items in appearing order and removes orphan biblio items
+        /// 
+        /// </summary>
+        /// <param name="sources"></param>
+        /// <returns></returns>
+        public static (int biblioIndex, string modBiblio) ArrangeCites(IList<string> sources)
+        {
+            // find thebibliography env
+
+
+            Environment bibenv = null;
+            List<Bibitem> bibitems = null;
+            string sourceWithBibenv = null;
+            var citeKeys = new List<string>();
+
+            foreach (var source in sources)
+            {
+                citeKeys.AddRange(Utils.GetCites(source).SelectMany(c => c.Keys));
+                if (source.Contains("thebibliography"))
+                {
+                    bibenv = Utils.FindEnv(source, "thebibliography");
+                    bibitems = Utils.GetBibitems(source, bibenv);
+                    sourceWithBibenv = source;
+                }
+            }
+
+            if (bibenv == null)
+                throw new Exception("thebibliography environment not found");
+
+            
+            return modSources;
+        }
+
+        public static string ArrangeCitesAndRenameToNumbers(string text)
         {
             var cites = Utils.GetCites(text);
             var bibenv = Utils.FindEnv(text, "thebibliography");
