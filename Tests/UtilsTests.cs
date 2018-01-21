@@ -509,8 +509,8 @@ Marcellan~F., Xu~Y. On Sobolev orthogonal polynomials~// arXiv:1403.6249v1 [math
 ");
             Utils.RenameRBibitems(ref sb, key => $"prefix-{key}");
             var newText = sb.ToString();
-            Assert.AreEqual(7, newText.Split('\n').Count(l => l.Contains("RBibitem")));
-            Assert.AreEqual(7, newText.Split('\n').Count(l => l.Contains("prefix-")));
+            Assert.AreEqual(6, newText.Split('\n').Count(l => l.Contains("RBibitem")));
+            Assert.AreEqual(6, newText.Split('\n').Count(l => l.Contains("prefix-")));
 
         }
     }

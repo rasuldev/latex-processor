@@ -376,6 +376,7 @@ namespace TextProcessor
                 throw new Exception("thebibliography environment not found");
 
             var newBibitemList = new List<Bibitem>();
+            Console.WriteLine("Bib keys in order of appearance:");
             foreach (var citeKey in citeKeys)
             {
                 if (newBibitemList.Any(b => b.Key == citeKey))
@@ -384,7 +385,10 @@ namespace TextProcessor
                 if (item == null)
                     Console.WriteLine($"Warning: not bibitem for cite key {citeKey}");
                 else
+                {
+                    Console.WriteLine(citeKey);
                     newBibitemList.Add(item);
+                }
             }
 
             // Replace bibitems in thebibliography environment

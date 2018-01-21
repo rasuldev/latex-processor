@@ -255,11 +255,13 @@ namespace TextProcessor.Latex
 
         public static void RenameRBibitems(ref StringBuilder sb, Func<string, string> keyConverter)
         {
-            Command command = new Command(0, "\\ss{11}", 1);
+            int endpos = 0;
             var rbibitems = new List<Command>();
-            while ((command = FindOneParamCommand(sb.ToString(), "RBibitem", command.Block.EndPos)) != null)
+            Command command;
+            while ((command = FindOneParamCommand(sb.ToString(), "RBibitem", endpos)) != null)
             {
                 rbibitems.Add(command);
+                endpos = command.Block.EndPos;
             }
 
             foreach (var rbibitem in rbibitems.OrderByDescending(r => r.Block.StartPos))
@@ -483,9 +485,12 @@ namespace TextProcessor.Latex
                 if (cmd.Block.EndPos > bibEnv.ClosingBlock.StartPos)
                     break;
 
-                int endTitlePos = text.IndexOf(@"\bibitem", cmd.Block.EndPos + 1);
-                if (endTitlePos == -1)
-                    endTitlePos = text.IndexOf(@"\end", cmd.Block.EndPos + 1);
+                //int endTitlePos = text.IndexOf(@"\bibitem", cmd.Block.EndPos + 1);
+                //if (endTitlePos == -1)
+                //    endTitlePos = text.IndexOf(@"\end", cmd.Block.EndPos + 1);
+                int endTitlePos =
+                    FindOneParamCommand(text, "bibitem", cmd.Block.EndPos + 1)?.Block.StartPos ??
+                    FindOneParamCommand(text, "end", cmd.Block.EndPos + 1).Block.StartPos;
                 string title = text.Substring(cmd.Block.EndPos + 1, endTitlePos - cmd.Block.EndPos - 1);
                 bibitems.Add(new Bibitem(
                     new TextBlock(text, cmd.Block.StartPos, endTitlePos - 1), cmd.Params[0], title));
