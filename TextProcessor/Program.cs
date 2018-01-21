@@ -15,18 +15,15 @@ namespace TextProcessor
             // TODO: skip commented lines
             MergeBib(new[]
             {
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-common.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-sob.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-sobleg.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-laplas.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-equ102.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-ramis.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-charlier.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\intros\intro2.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\biblios\biblio2.tex"
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section4-valle.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-sob-ode.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-sob-ode-numerical.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section4-akm.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\intros\intro4.tex",
+                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\biblios\biblio4.tex"
             });
 
-            ArticlePreProcessing();
+            //ArticlePreProcessing(@"h:\Temp\DEMI_SHII_MMG.tex", "cosode-", Encoding.GetEncoding("windows-1251"));
 
             //RenameCitesAndBiblio(@"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-charlier.tex", "charlier-");
 
@@ -53,14 +50,27 @@ namespace TextProcessor
             //ProcessFile(@"..\..\test_processed.txt", @"..\..\test2.txt", encoding);
         }
 
-        private static void ArticlePreProcessing()
+        private static void ArticlePreProcessing(string filename, string prefix, Encoding encoding = null)
         {
             // add prefixes to formulas
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+            
+            var sb = new StringBuilder(File.ReadAllText(filename, encoding));
+            Utils.RenameLabels(ref sb, $"{prefix}#name#");
+
             // add prefixes to cites and biblio
+            Utils.RenameCites(ref sb, key => prefix + key);
+            Utils.RenameBibitems(ref sb, key => prefix + key);
+            Utils.RenameRBibitems(ref sb, key => prefix + key);
+
             // expand range cites (convert \cite{1} -- \cite{4} to \cite{1,2,3,4})
             // merge cites (convert \cite{1}, \cite{2} to \cite{1,2})
             // detect broken cites
             // detect and drop unused biblio
+
+            File.Copy(filename, GetBakFilename(filename));
+            File.WriteAllText(filename, sb.ToString(), encoding);
         }
 
         private static void RenameCitesAndBiblio(string filename, string prefix, Encoding encoding = null)

@@ -264,7 +264,7 @@ namespace TextProcessor
                         return newKeysFor[k];
                     else
                     {
-                        Console.WriteLine($"Warning: not correspondence for bibkey {k}");
+                        Console.WriteLine($"Warning: no correspondence for bibkey {k}");
                         return k;
                     }
                 }).ToList();
@@ -311,7 +311,7 @@ namespace TextProcessor
             text = text.Remove(bibenv.OpeningBlock.EndPos + 1,
                         bibenv.ClosingBlock.StartPos - bibenv.OpeningBlock.EndPos - 1)
                         .Insert(bibenv.OpeningBlock.EndPos + 1, biblistStr);
-            
+
             return Tuple.Create(text, keysOldNew);
         }
 
@@ -337,7 +337,7 @@ namespace TextProcessor
             }
 
             essence = essence.Replace('.', ' ').Replace(',', ' ').Replace("\n", "").Replace("\r", "")
-                .Replace('~',' ').Replace('{', ' ').Replace('}', ' ');
+                .Replace('~', ' ').Replace('{', ' ').Replace('}', ' ');
             var words = essence.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(w => w.Length > 3);
             essence = String.Join(" ", words).Trim().ToLower();
@@ -346,36 +346,55 @@ namespace TextProcessor
 
         /// <summary>
         /// Reorders biblio items in appearing order and removes orphan biblio items
-        /// 
         /// </summary>
         /// <param name="sources"></param>
-        /// <returns></returns>
-        public static (int biblioIndex, string modBiblio) ArrangeCites(IList<string> sources)
+        /// <returns>biblioIndex is index in <paramref name="sources" /> of source from which 
+        /// bibliography env was taken. This source is changed and new version of it contains in modBiblio
+        /// </returns>
+        public static (int biblioIndex, string modBiblio) ArrangeCites(params string[] sources)
         {
             // find thebibliography env
-
-
             Environment bibenv = null;
             List<Bibitem> bibitems = null;
             string sourceWithBibenv = null;
             var citeKeys = new List<string>();
-
-            foreach (var source in sources)
+            var biblioIndex = -1;
+            for (var i = 0; i < sources.Length; i++)
             {
+                var source = sources[i];
                 citeKeys.AddRange(Utils.GetCites(source).SelectMany(c => c.Keys));
                 if (source.Contains("thebibliography"))
                 {
+                    biblioIndex = i;
                     bibenv = Utils.FindEnv(source, "thebibliography");
                     bibitems = Utils.GetBibitems(source, bibenv);
                     sourceWithBibenv = source;
                 }
             }
 
-            if (bibenv == null)
+            if (biblioIndex == -1)
                 throw new Exception("thebibliography environment not found");
 
-            
-            return modSources;
+            var newBibitemList = new List<Bibitem>();
+            foreach (var citeKey in citeKeys)
+            {
+                if (newBibitemList.Any(b => b.Key == citeKey))
+                    continue;
+                var item = bibitems.Find(b => b.Key == citeKey);
+                if (item == null)
+                    Console.WriteLine($"Warning: not bibitem for cite key {citeKey}");
+                else
+                    newBibitemList.Add(item);
+            }
+
+            // Replace bibitems in thebibliography environment
+            var startpos = bibitems.First().Block.StartPos;
+            var endpos = bibitems.Last().Block.EndPos;
+            var sb = new StringBuilder(sources[biblioIndex]);
+            sb.Remove(startpos, endpos - startpos + 1)
+                .Insert(startpos, String.Join("\r\n", newBibitemList));
+
+            return (biblioIndex, sb.ToString());
         }
 
         public static string ArrangeCitesAndRenameToNumbers(string text)

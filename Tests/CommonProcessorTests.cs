@@ -4,6 +4,7 @@ using System.Text;
 using NUnit.Framework;
 using TextProcessor;
 using System.Text.RegularExpressions;
+using TextProcessor.Latex;
 
 namespace Tests
 {
@@ -124,6 +125,33 @@ $$
 ";
             var cleaned = Regex.Replace(source, @"(?<=\$\$.*?)(\r?\n){2,}(?=.*?\$\$)", "\r\n");
             Assert.AreEqual(expected, cleaned);
+        }
+
+        [Test]
+        public void ArrangeCitesTest()
+        {
+            var source = @"
+В статье \cite{bib1} рассмотрены вопросы... Кроме того, в \cite{bib2} и \cite{bib3,bib4}...
+\begin{thebibliography}{1} %% здесь библиографический список
+\bibitem{bib1} И.И. Шарапудинов. Приближение функций с переменной гладкостью суммами Фурье Лежандра // Математический сборник. 2000. Том 191. Вып. 5. С.143-160.
+
+\bibitem{bib4} И.И. Шарапудинов. Смешанные ряды по ортогональным полиномам // Махачкала. Издательство Дагестанского научного центра. 2004.
+
+
+\bibitem{bib3} И.И. Шарапудинов. Аппроксимативные свойства смешанных рядов по полиномам Лежандра на классах $W^r$ // Математический сборник. 2006. Том 197. Вып. 3. С. 135–154.
+
+\bibitem{bib2} И.И. Шарапудинов. Аппроксимативные свойства средних типа Валле-Пуссена частичных сумм смешанных рядов по полиномам Лежандра // Математические заметки. 2008. Том 84. Вып. 3. С. 452-471
+\end{thebibliography}
+";
+            var (bibInd, mod) = CommonProcessor.ArrangeCites(source);
+            Assert.AreEqual(0, bibInd);
+            var bibitems = Utils.GetBibitems(mod, Utils.FindEnv(mod, "thebibliography"));
+            Assert.AreEqual(4, bibitems.Count);
+            for (int i = 0; i < bibitems.Count; i++)
+            {
+                Assert.AreEqual("bib"+(i+1), bibitems[i].Key);
+            }
+
         }
     }
 }
