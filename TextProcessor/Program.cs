@@ -10,25 +10,56 @@ namespace TextProcessor
 {
     class Program
     {
+        private static readonly string[] Theme1Files = new[]
+        {
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\intros\intro1.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-jacobi-basis.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-uniform_boundedness_Lpxw.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-lapped-valle.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section1-ramis.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-polyline.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section1-rark.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\biblios\biblio1.tex"
+        };
+        private static readonly string[] Theme2Files = new[]
+        {
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\intros\intro2.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-common.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-sob.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-sobleg.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-laplas.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-equ102.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-ramis.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-charlier.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\biblios\biblio2.tex"
+        };
+        private static readonly string[] Theme3Files = new[]
+        {
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\intros\intro3.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section3-smm.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section3-kri.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section3-ei.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section3-mzg.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\biblios\biblio3.tex"
+        };
+        private static readonly string[] Theme4Files = new[]
+        {
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\intros\intro4.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section4-valle.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-sob-ode.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-sob-ode-numerical.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section4-akm.tex",
+            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\biblios\biblio4.tex"
+        };
         static void Main(string[] args)
         {
             // TODO: skip commented lines
-            MergeBib(new[]
-            {
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\biblio.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\Отчет2017закл.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-cheb-discrete.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-spec-leg.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-lpx.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-meixner.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-vp.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-jacobi-common.tex",
-                @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-fejer.tex"
-            }, Encoding.GetEncoding("windows-1251"));
+            ArrangeBiblio(Theme3Files);
 
+            //ArticlePreProcessing(@"h:\Temp\DEMI_SHII_MMG.tex", "cosode-", Encoding.GetEncoding("windows-1251"));
 
-            //Process3(@"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2017\Цитис\section-lpx.tex",
-            //    Encoding.GetEncoding("windows-1251"));
+            //RenameCitesAndBiblio(@"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-charlier.tex", "charlier-");
+
 
             //Process2(@"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG.tex",
             //         @"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG_p.tex",
@@ -52,6 +83,50 @@ namespace TextProcessor
             //ProcessFile(@"..\..\test_processed.txt", @"..\..\test2.txt", encoding);
         }
 
+        private static void ArrangeBiblio(string[] filenames, Encoding encoding = null)
+        {
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+            var sources = filenames.Select(f => File.ReadAllText(f, encoding)).ToArray();
+            var (bibInd, mod) = CommonProcessor.ArrangeCites(sources);
+            File.Copy(filenames[bibInd], GetBakFilename(filenames[bibInd]));
+            File.WriteAllText(filenames[bibInd], mod);
+        }
+        private static void ArticlePreProcessing(string filename, string prefix, Encoding encoding = null)
+        {
+            // add prefixes to formulas
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+            
+            var sb = new StringBuilder(File.ReadAllText(filename, encoding));
+            Utils.RenameLabels(ref sb, $"{prefix}#name#");
+
+            // add prefixes to cites and biblio
+            Utils.RenameCites(ref sb, key => prefix + key);
+            Utils.RenameBibitems(ref sb, key => prefix + key);
+            Utils.RenameRBibitems(ref sb, key => prefix + key);
+
+            // expand range cites (convert \cite{1} -- \cite{4} to \cite{1,2,3,4})
+            // merge cites (convert \cite{1}, \cite{2} to \cite{1,2})
+            // detect broken cites
+            // detect and drop unused biblio
+
+            File.Copy(filename, GetBakFilename(filename));
+            File.WriteAllText(filename, sb.ToString(), encoding);
+        }
+
+        private static void RenameCitesAndBiblio(string filename, string prefix, Encoding encoding = null)
+        {
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+            File.Copy(filename, GetBakFilename(filename));
+            var sb = new StringBuilder(File.ReadAllText(filename, encoding));
+            Utils.RenameCites(ref sb, key => prefix + key);
+            Utils.RenameBibitems(ref sb, key => prefix + key);
+            Utils.RenameRBibitems(ref sb, key => prefix + key);
+            File.WriteAllText(filename, sb.ToString(), encoding);
+        }
+
         private static void MergeBib(string[] filenames, Encoding encoding = null)
         {
             if (encoding == null)
@@ -61,13 +136,14 @@ namespace TextProcessor
             sources = CommonProcessor.MergeBibitemsAndReplaceCites(sources);
             for (int i = 0; i < sources.Count; i++)
             {
-                File.WriteAllText(GetProcessedFilename(filenames[i]), sources[i], encoding);
+                File.Copy(filenames[i], GetBakFilename(filenames[i]));
+                File.WriteAllText(filenames[i], sources[i], encoding);
             }
         }
 
 
 
-        private static void Process3(string sourceFilename, Encoding encoding = null)
+        private static void Process3(string sourceFilename, string prefix, Encoding encoding = null)
         {
             string destinationFilename = Path.Combine(
                 Path.GetDirectoryName(sourceFilename),
@@ -76,7 +152,7 @@ namespace TextProcessor
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var sb = new StringBuilder(File.ReadAllText(sourceFilename, encoding));
-            Utils.RenameLabels(ref sb, "lpx-#name#");
+            Utils.RenameLabels(ref sb, $"{prefix}#name#");
             File.WriteAllText(destinationFilename, sb.ToString(), encoding);
         }
 
@@ -138,11 +214,22 @@ namespace TextProcessor
             File.WriteAllText(destinationFilename, text, encoding);
         }
 
+
+        private static string GetBakFilename(string filename)
+        {
+            var i = 1;
+            string bakName;
+            while (File.Exists(bakName = filename + ".bak" + i))
+            {
+                ++i;
+            }
+            return bakName;
+        }
         private static string GetProcessedFilename(string filename)
         {
             return Path.Combine(
                             Path.GetDirectoryName(filename),
-                            Path.GetFileNameWithoutExtension(filename) + //"_processed" +
+                            Path.GetFileNameWithoutExtension(filename) + "_processed" +
                             Path.GetExtension(filename));
         }
 

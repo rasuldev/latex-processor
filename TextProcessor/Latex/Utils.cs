@@ -205,6 +205,74 @@ namespace TextProcessor.Latex
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="keyConverter">Converter that accepts current cite key as param and should return new key</param>
+        public static void RenameCites(ref StringBuilder sb, Func<string, string> keyConverter)
+        {
+            var cites = GetCites(sb.ToString());
+            foreach (var cite in cites.OrderByDescending(c => c.Block.StartPos))
+            {
+                var newKeys = cite.Keys.Select(keyConverter).ToList();
+                sb.Remove(cite.Block.StartPos, cite.Block.Length);
+                sb.Insert(cite.Block.StartPos, Cite.GenerateMarkup(newKeys));
+            }
+
+            Console.WriteLine($"Renamed {cites.Sum(c => c.Keys.Count)} keys in {cites.Count} cites");
+        }
+
+        /// <summary>
+        /// All bibitems should be contained in \begin{thebibliography}\end{thebibliography} environment.
+        /// Method will process only first.
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="keyConverter">Converter that accepts current cite key as param and should return new key</param>
+        public static void RenameBibitems(ref StringBuilder sb, Func<string, string> keyConverter)
+        {
+            var bibenv = FindEnv(sb.ToString(), "thebibliography");
+            if (bibenv == null)
+                throw new Exception("thebibliography environment not found");
+            RenameBibitems(ref sb, keyConverter, bibenv);
+        }
+
+        /// <summary>
+        /// Processes all bibitems inside given bibenv
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="keyConverter"></param>
+        /// <param name="bibenv"></param>
+        public static void RenameBibitems(ref StringBuilder sb, Func<string, string> keyConverter, Environment bibenv)
+        {
+            var bibitems = GetBibitems(sb.ToString(), bibenv);
+            foreach (var bibitem in bibitems.OrderByDescending(c => c.Block.StartPos))
+            {
+                sb.Remove(bibitem.Block.StartPos, bibitem.Block.Length);
+                sb.Insert(bibitem.Block.StartPos, Bibitem.GenerateMarkup(keyConverter(bibitem.Key), bibitem.FullTitle));
+            }
+            Console.WriteLine($"Renamed {bibitems.Count} bibitems");
+        }
+
+        public static void RenameRBibitems(ref StringBuilder sb, Func<string, string> keyConverter)
+        {
+            int endpos = 0;
+            var rbibitems = new List<Command>();
+            Command command;
+            while ((command = FindOneParamCommand(sb.ToString(), "RBibitem", endpos)) != null)
+            {
+                rbibitems.Add(command);
+                endpos = command.Block.EndPos;
+            }
+
+            foreach (var rbibitem in rbibitems.OrderByDescending(r => r.Block.StartPos))
+            {
+                sb.Remove(rbibitem.Block.StartPos, rbibitem.Block.Length);
+                sb.Insert(rbibitem.Block.StartPos, $@"\RBibitem{{{keyConverter(rbibitem.Params.First())}}}");
+            }
+            Console.WriteLine($"Renamed {rbibitems.Count} RBibitems");
+        }
+
+        /// <summary>
         /// It doesn't work for nested environments
         /// </summary>
         /// <param name="sb"></param>
@@ -417,12 +485,15 @@ namespace TextProcessor.Latex
                 if (cmd.Block.EndPos > bibEnv.ClosingBlock.StartPos)
                     break;
 
-                int endTitlePos = text.IndexOf(@"\bibitem", cmd.Block.EndPos + 1);
-                if (endTitlePos == -1)
-                    endTitlePos = text.IndexOf(@"\end", cmd.Block.EndPos + 1);
+                //int endTitlePos = text.IndexOf(@"\bibitem", cmd.Block.EndPos + 1);
+                //if (endTitlePos == -1)
+                //    endTitlePos = text.IndexOf(@"\end", cmd.Block.EndPos + 1);
+                int endTitlePos =
+                    FindOneParamCommand(text, "bibitem", cmd.Block.EndPos + 1)?.Block.StartPos ??
+                    FindOneParamCommand(text, "end", cmd.Block.EndPos + 1).Block.StartPos;
                 string title = text.Substring(cmd.Block.EndPos + 1, endTitlePos - cmd.Block.EndPos - 1);
                 bibitems.Add(new Bibitem(
-                    new TextBlock(text, cmd.Block.StartPos, endTitlePos), cmd.Params[0], title));
+                    new TextBlock(text, cmd.Block.StartPos, endTitlePos - 1), cmd.Params[0], title));
 
                 start = endTitlePos;
                 if (start > bibEnv.ClosingBlock.StartPos)
@@ -478,6 +549,7 @@ namespace TextProcessor.Latex
             var end = match.Index + match.Length - 1;
             return new TextBlock(text, start, end);
         }
+
 
         class EnvironmentBound
         {

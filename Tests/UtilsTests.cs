@@ -365,5 +365,153 @@ Text after...
             Assert.AreEqual(text.IndexOf(@"\cite"),cites[0].Block.StartPos);
 
         }
+
+        [Test]
+        public void RenameCitesTest()
+        {
+            var sb = new StringBuilder(@"
+\vspace{0.5cm}
+{\bf 4.1. Цель и задачи фундаментального исследования}
+\vspace{0.3cm}
+Проект направлен на решение фундаментальной проблемы об исследовании новых методов теории приближения функций,
+связанных с решением ряда актуальных современных задач, возникающих в таких областях, как обработка и сжатие 
+временных рядов и изображений \cite{1,2,3,4}, приближенное решение систем нелинейных дифференциальных  и 
+разностных уравнений численно-аналитическими методами \cite{5,6,7,8}, численное обращение преобразования 
+Радона \cite{9,10},  идентификация линейных и нелинейных систем автоматического регулирования и управления 
+\cite{11,12}, \cite{kolmogorov} и других. (Числа в квадратных скобках означают ссылки на литературу, 
+приведенную для удобства чтения в конце настоящего пункта.)
+");
+            Utils.RenameCites(ref sb, key => $"prefix-{key}");
+            var newText = sb.ToString();
+            var cites = Utils.GetCites(newText);
+            Assert.AreEqual(5, cites.Count);
+            foreach (var cite in cites)
+            {
+                Assert.That(cite.Keys.All(k => k.StartsWith("prefix-")));
+            }
+
+            Assert.AreEqual(13, cites.Sum(c => c.Keys.Count));
+        }
+
+        [Test]
+        public void RenameBibitemsTest()
+        {
+            var sb = new StringBuilder(@"
+\begin{thebibliography}{999}
+
+
+
+\bibitem{Shar1}
+Iserles~A., Koch~P.~E., Norsett~S.~P., Sanz-Serna~J.~M. On polynomials orthogonal with respect to certain Sobolev inner products~// J. Approx. Theory. 1991. Vol.~65. Iss.~2. Pp.~151--175. DOI: 10.1016/0021-9045(91)90100-O.
+\bibitem{Shar2}
+Marcellan~F., Alfaro~M., Rezola~M.~L. Orthogonal polynomials on Sobolev spaces: old and new directions~// J. Comput. Appl. Math. 1993. Vol.~48. Iss.~1--2. Pp.~113--131. DOI: 10.1016/0377-0427(93)90318-6.
+\bibitem{Shar3}
+Meijer~H.~G. Laguerre polynomials generalized to a certain discrete Sobolev inner product space~// J. Approx. Theory. 1993. Vol.~73. Iss.~1. Pp.~1--16. DOI: 10.1006/jath.1993.1029.
+\bibitem{Shar4}
+Kwon~K.~H., Littlejohn~L.~L. The orthogonality of the Laguerre polynomials $\{L_n^{(-k)}(x)\}$ for positive integers $k$~// Ann. Numer. Anal. 1995. Vol.~2. Pp.~289--303.
+\bibitem{Shar5}
+Kwon~K.~H., Littlejohn~L.~L. Sobolev orthogonal polynomials and second-order differential equations~// Rocky Mountain J. Math. 1998. Vol.~28. Pp.~547--594. DOI: 10.1216/rmjm/1181071786
+\bibitem{Shar6}
+Marcellan~F., Xu~Y. On Sobolev orthogonal polynomials~// arXiv:1403.6249v1 [math.CA]. 25~Mar~2014. 40~p.
+\bibitem{Shar7}
+Шарапудинов~И.~И., Гаджиева~З.~Д. Полиномы, ортогональные по Соболеву, порожденные многочленами Мейкснера~// Изв. Сарат. ун-та. Нов. cер. Сер. Математика. Механика. Информатика. 2016. Т.~16. Вып.~3. С.~310--321. DOI: 10.18500/1816-9791-2016-16-3-310-321.
+\bibitem{Shar8}
+Шарапудинов~И.~И. Смешанные ряды по ортогональным полиномам. Махачкалаю. Изд-во ДНЦ РАН. 2004.
+\bibitem{Shar9}
+Шарапудинов~И.~И. Многочлены, ортогональные на сетках. Махачкала. Изд-во Даг. гос. пед. ун-та. 1997.	
+\bibitem{Shar10}
+Бейтмен~Г., Эрдейи~А. Высшие трансцендентные функции. Том 2. Москва. Наука. 1974.
+
+
+\bibitem{Shar11}
+Ширяев~А.~Н. Вероятность-1. Москва. Изд-во МЦНМО. 2007.
+
+\end{thebibliography}
+
+");
+            Utils.RenameBibitems(ref sb, key => $"prefix-{key}");
+            var newText = sb.ToString();
+            var bibitems = Utils.GetBibitems(newText, Utils.FindEnv(newText, "thebibliography"));
+            Assert.AreEqual(11, bibitems.Count);
+            Assert.That(bibitems.All(b => b.Key.StartsWith("prefix-")));
+        }
+
+        [Test]
+        public void RenameRBibitemsTest()
+        {
+            var sb = new StringBuilder(@"
+
+\RBibitem{TEL}
+\by С.\, А. Теляковский
+\paper Две теоремы о приближении функций алгебраическими многочленами
+\inbook Математический сборник
+\vol 70
+\issue 2
+\yr 1966
+\pages 252 -- 265
+
+
+\RBibitem{GOP}
+\by И.\, З. Гопенгауз
+\paper К теореме А. Ф. Тимана о приближении функций многочленами на
+конечном отрезке
+\inbook Математические  заметки
+\vol 1
+\issue 2
+\yr 1967
+\pages 163 -- 172
+
+
+
+
+
+\RBibitem{OSK}
+\by К.\, И. Осколков
+\paper К неравенству Лебега в равномерной метрике и на множестве полной меры
+\inbook Математические  заметки
+\vol 18
+\issue 4
+\yr 1975
+\pages 515 -- 526
+
+\RBibitem{sharap1}
+\by I.\,I. Sharapudinov
+\paper On the best approximation and polinomial of the least quadratic deviation
+\inbook Analysis Mathematica
+\vol 9
+\issue 3
+\yr 1983
+\pages 223 -- 234
+
+
+\RBibitem{sharap2}
+\by И.\,И. Шарапудинов
+\paper О наилучшем приближении и суммах Фурье-Якоби
+\inbook Математические заметки
+\vol 34
+\issue 5
+\yr 1983
+\pages 651 -- 661
+
+
+
+\RBibitem{Timan}
+\by А.Ф. Тиман
+\paper
+\inbook  Теория приближения функций действительного переменного
+\publ Физматгиз
+\yr 1960
+\pages
+\publaddr Москва
+
+
+
+");
+            Utils.RenameRBibitems(ref sb, key => $"prefix-{key}");
+            var newText = sb.ToString();
+            Assert.AreEqual(6, newText.Split('\n').Count(l => l.Contains("RBibitem")));
+            Assert.AreEqual(6, newText.Split('\n').Count(l => l.Contains("prefix-")));
+
+        }
     }
 }
