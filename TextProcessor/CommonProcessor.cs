@@ -24,12 +24,23 @@ namespace TextProcessor
             // Harvesting labels, placing eqno() and removing labels
             var labels = new Stack<string>();
             var matches = Regex.Matches(sb.ToString(), @"\\label(?:.|\r?\n)*?\{(.+?)\}");
+            var matchList = new List<Match>();
+            foreach (Match match in matches.OfType<Match>().OrderByDescending(m => m.Index))
+            {
+                if (Utils.IsComment(sb.ToString(), match.Index)) continue;
+                var envName = Utils.GetEnvironmentName(sb.ToString(), match.Index);
+                if (envName.Content.Contains("section") || envName.Content.Contains("lemma")
+                                                        || envName.Content.Contains("theorem"))
+                    continue;
+                matchList.Add(match);
+            }
+
             // Labels count
-            var eqNumber = matches.Count;
+            var eqNumber = matchList.Count;
 
             // Enumeration is started from end.
             // So last equation number would be equal to labels count
-            foreach (Match match in matches.OfType<Match>().OrderByDescending(m => m.Index))
+            foreach (Match match in matchList)
             {
                 labels.Push(match.Groups[1].Value);
                 var endDollarsPos = sb.ToString().IndexOf("$$", match.Index);

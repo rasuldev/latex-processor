@@ -54,7 +54,7 @@ namespace TextProcessor
         static void Main(string[] args)
         {
             // TODO: skip commented lines
-            ArrangeBiblio(Theme3Files);
+            //ArrangeBiblio(new []{ "path-to-tex-file" }, Encoding.GetEncoding("windows-1251"));
 
             //ArticlePreProcessing(@"h:\Temp\DEMI_SHII_MMG.tex", "cosode-", Encoding.GetEncoding("windows-1251"));
 
@@ -65,9 +65,9 @@ namespace TextProcessor
             //         @"d:\Downloads\Саратов 04.2014\SharapudinovII_AknievGG_p.tex",
             //    Encoding.GetEncoding("windows-1251"));
 
-            //ProcessFile(
-            //    @"g:\Dropbox\INFO_BASE\DOCS\000 делопроизводство\001 Grants\Проект РФФИ 2016\ПроектРФФИ_2016до2018_Form4.tex",
-            //    Encoding.GetEncoding("windows-1251"));
+            ProcessFile(
+                @"h:\Dropbox\INFO_BASE_EXT\000 DOC SRW\ИИ\Повторные средние\2\VallePoussenMeans.tex",
+                Encoding.GetEncoding("windows-1251"));
 
             //ProcessFile(
             //    @"d:\Dropbox\~INFO_BASE_EXT\000 DOC SRW\Rasul\Статьи\Специальные ряды sigma rr\article.tex", Encoding.GetEncoding("windows-1251"));
@@ -206,8 +206,8 @@ namespace TextProcessor
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var source = File.ReadAllText(sourceFilename, encoding);
-            var text = CommonProcessor.MakeEquationWithLabelsFromDollars(source, "eq");
-            //var text = CommonProcessor.MakeDollarsFromEquationWithLabels(source);
+            //var text = CommonProcessor.MakeEquationWithLabelsFromDollars(source, "eq");
+            var text = CommonProcessor.MakeDollarsFromEquationWithLabels(source);
             //var text = CommonProcessor.ArrangeCites(source);
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Замечание (\d*).*}", "%e", "замечани", "remark", n => "kad-ito:"+n);
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Определение ((\d|\.)*).*?}", "%e", "определени", "definition", n => "sirazh2:" + n);
