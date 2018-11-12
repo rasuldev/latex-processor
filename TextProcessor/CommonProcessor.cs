@@ -17,10 +17,6 @@ namespace TextProcessor
         {
             var sb = new StringBuilder(source);
 
-            // Replacing \begin{equation},\end{equation} with $$
-            sb = sb.Replace(@"\begin{equation}", "$$");
-            sb = sb.Replace(@"\end{equation}", "$$");
-
             // Harvesting labels, placing eqno() and removing labels
             var labels = new Stack<string>();
             var matches = Regex.Matches(sb.ToString(), @"\\label(?:.|\r?\n)*?\{(.+?)\}");
@@ -38,12 +34,14 @@ namespace TextProcessor
             // Labels count
             var eqNumber = matchList.Count;
 
+          
+
             // Enumeration is started from end.
             // So last equation number would be equal to labels count
             foreach (Match match in matchList)
             {
                 labels.Push(match.Groups[1].Value);
-                var endDollarsPos = sb.ToString().IndexOf("$$", match.Index);
+                var endDollarsPos = sb.ToString().IndexOf(@"\end{equation}", match.Index);
                 sb = sb.Insert(endDollarsPos, @"\eqno(" + eqNumber + ")\r\n");
                 eqNumber--;
                 sb = sb.Remove(match.Index, match.Length);
@@ -55,6 +53,10 @@ namespace TextProcessor
             {
                 sb = sb.Replace(@"\eqref{" + labelsArr[i] + @"}", "(" + (i + 1) + ")");
             }
+
+            // Replacing \begin{equation},\end{equation} with $$
+            sb = sb.Replace(@"\begin{equation}", "$$");
+            sb = sb.Replace(@"\end{equation}", "$$");
 
             // Removing blank lines at begin or end of $$-blocks
             var cleaned = Regex.Replace(sb.ToString(), @"\$\$(\r?\n){2,}", "$$$$\r\n");
