@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
@@ -491,7 +492,31 @@ namespace TextProcessor
 
         public static string ConvertRBibitemsToBibitems(string text)
         {
-            throw new NotImplementedException();
+            var bibenv = Utils.FindEnv(text, "thebibliography");
+            var rbibitems = Utils.GetRBibitems(text, bibenv);
+            var sb = new StringBuilder(text);
+            foreach (var rbib in rbibitems.OrderByDescending(r => r.Block.StartPos))
+            {
+                var props = rbib.Properties;
+                var fulltitle = props["by"].Trim() + ",";
+
+                if (!rbib.IsBook)
+                {
+                    var journame = props.ContainsKey("inbook") ? props["inbook"] : props["jour"];
+                    var volAndIssue = props.Get("vol") + ":" + props.Get("issue");
+                    if (volAndIssue.StartsWith(":") || volAndIssue.EndsWith(":"))
+                        volAndIssue = volAndIssue.Replace(":", "");
+                    fulltitle += $"\"{props["paper"]}\", {journame}, {volAndIssue} ({props.Get("yr")}), {props.Get("pages")}";
+                }
+                else
+                {
+                    fulltitle += $"{props["book"]}. {props.Get("publ")}, {props.Get("publaddr")}, {props.Get("yr")}, {props.Get("pages")} с.";
+                }
+
+                sb.Remove(rbib.Block.StartPos, rbib.Block.Length);
+                sb.Insert(rbib.Block.StartPos, Bibitem.GenerateMarkup(rbib.Key, fulltitle)+".\r\n\r\n");
+            }
+            return sb.ToString();
         }
     }
 }

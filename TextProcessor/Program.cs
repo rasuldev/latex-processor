@@ -71,8 +71,10 @@ namespace TextProcessor
             //    @"h:\Dropbox\INFO_BASE_EXT\000 DOC SRW\ИИ\Повторные средние\2\VallePoussenMeans.tex",
             //    Encoding.GetEncoding("windows-1251"));
 
-            ProcessFile(
-                @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ 2016\Итоговый отчет\Form503. Report.tex", Encoding.GetEncoding("windows-1251"));
+            //ProcessFile(
+            //    @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ 2016\Итоговый отчет\Form503. Report.tex", Encoding.GetEncoding("windows-1251"));
+
+            ConvertRbibToBib(@"e:\Temp\report-bib.txt", Encoding.GetEncoding("windows-1251"));
 
             //ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки main — копия.tex", @"D:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки mainEq.tex", Encoding.GetEncoding("windows-1251"));
 
@@ -214,6 +216,18 @@ namespace TextProcessor
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Замечание (\d*).*}", "%e", "замечани", "remark", n => "kad-ito:"+n);
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Определение ((\d|\.)*).*?}", "%e", "определени", "definition", n => "sirazh2:" + n);
             File.WriteAllText(destinationFilename, text, encoding);
+        }
+
+        private static void ConvertRbibToBib(string filename, Encoding encoding = null)
+        {
+            // add prefixes to formulas
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+
+            var converted = CommonProcessor.ConvertRBibitemsToBibitems(File.ReadAllText(filename, encoding));
+
+            File.Copy(filename, GetBakFilename(filename));
+            File.WriteAllText(filename, converted, encoding);
         }
 
 

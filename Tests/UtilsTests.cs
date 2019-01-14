@@ -594,6 +594,7 @@ Marcellan~F., Xu~Y. On Sobolev orthogonal polynomials~// arXiv:1403.6249v1 [math
 
             Assert.AreEqual(7, timan.Properties.Count);
             Assert.AreEqual("1960", timan.Properties["yr"]);
+            Assert.AreEqual("Москва", timan.Properties["publaddr"]);
         }
     }
 

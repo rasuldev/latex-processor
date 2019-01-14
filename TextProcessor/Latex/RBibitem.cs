@@ -13,6 +13,7 @@ namespace TextProcessor.Latex
         /// </summary>
         public Dictionary<string, string> Properties { get; }
 
+        public bool IsBook => Properties?.ContainsKey("book") == true;
         //private static string[] _knownProps = {"by","paper","inbook","vol","issue", ""};
 
         /// <summary>
