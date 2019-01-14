@@ -288,10 +288,10 @@ Theorem statement
 Another text...
 ";
             var env = Utils.FindEnv(text, "theorem");
-            Assert.AreEqual(text.IndexOf(@"\begin"),env.OpeningBlock.StartPos);
-            Assert.AreEqual(text.IndexOf(@"{12}")-1, env.OpeningBlock.EndPos);
+            Assert.AreEqual(text.IndexOf(@"\begin"), env.OpeningBlock.StartPos);
+            Assert.AreEqual(text.IndexOf(@"{12}") - 1, env.OpeningBlock.EndPos);
             Assert.AreEqual(text.IndexOf(@"\end"), env.ClosingBlock.StartPos);
-            Assert.AreEqual(text.IndexOf(@"#")-1, env.ClosingBlock.EndPos);
+            Assert.AreEqual(text.IndexOf(@"#") - 1, env.ClosingBlock.EndPos);
         }
 
         [Test]
@@ -322,7 +322,7 @@ Text after...
             Assert.AreEqual(4, bibitems.Count);
             for (int i = 0; i < 3; i++)
             {
-                Assert.That(bibitems[i].Key == (i+1).ToString());
+                Assert.That(bibitems[i].Key == (i + 1).ToString());
             }
 
             Assert.AreEqual(
@@ -359,10 +359,10 @@ Text after...
             Assert.AreEqual(2, cites[2].Keys.Count);
             Assert.AreEqual(2, cites[3].Keys.Count);
 
-            CollectionAssert.AreEqual(new[] {"1","2","3","4"}, cites[0].Keys);
+            CollectionAssert.AreEqual(new[] { "1", "2", "3", "4" }, cites[0].Keys);
             CollectionAssert.AreEqual(new[] { "11", "12" }, cites[3].Keys);
 
-            Assert.AreEqual(text.IndexOf(@"\cite"),cites[0].Block.StartPos);
+            Assert.AreEqual(text.IndexOf(@"\cite"), cites[0].Block.StartPos);
 
         }
 
@@ -513,5 +513,88 @@ Marcellan~F., Xu~Y. On Sobolev orthogonal polynomials~// arXiv:1403.6249v1 [math
             Assert.AreEqual(6, newText.Split('\n').Count(l => l.Contains("prefix-")));
 
         }
+
+        [Test]
+        public void GetRBibitemsTest()
+        {
+            var sb = new StringBuilder(@"
+\begin{thebibliography}{46}
+\RBibitem{TEL}
+\by С.\, А. Теляковский
+\paper Две теоремы о приближении функций алгебраическими многочленами
+\inbook Математический сборник
+\vol 70
+\issue 2
+\yr 1966
+\pages 252 -- 265
+
+
+\RBibitem{GOP}
+\by И.\, З. Гопенгауз
+\paper К теореме А. Ф. Тимана о приближении функций многочленами на
+конечном отрезке
+\inbook Математические  заметки
+\vol 1
+\issue 2
+\yr 1967
+\pages 163 -- 172
+
+
+
+
+
+\RBibitem{OSK}
+\by К.\, И. Осколков
+\paper К неравенству Лебега в равномерной метрике и на множестве полной меры
+\inbook Математические  заметки
+\vol 18
+\issue 4
+\yr 1975
+\pages 515 -- 526
+
+\RBibitem{sharap1}
+\by I.\,I. Sharapudinov
+\paper On the best approximation and polinomial of the least quadratic deviation
+\inbook Analysis Mathematica
+\vol 9
+\issue 3
+\yr 1983
+\pages 223 -- 234
+
+
+\RBibitem{sharap2}
+\by И.\,И. Шарапудинов
+\paper О наилучшем приближении и суммах Фурье-Якоби
+\inbook Математические заметки
+\vol 34
+\issue 5
+\yr 1983
+\pages 651 -- 661
+
+
+
+\RBibitem{Timan}
+\by А.Ф. Тиман
+\paper
+\inbook  Теория приближения функций действительного переменного
+\publ Физматгиз
+\yr 1960
+\pages
+\publaddr Москва
+
+\end{thebibliography}
+
+");
+            var bibenv = Utils.FindEnv(sb.ToString(), "thebibliography");
+            var rbibitems = Utils.GetRBibitems(sb.ToString(), bibenv);
+
+            Assert.AreEqual(6, rbibitems.Count);
+            CollectionAssert.AreEqual(new[] { "TEL", "GOP", "OSK", "sharap1", "sharap2", "Timan" }, rbibitems.Select(r => r.Key));
+            var timan = rbibitems.Last();
+
+            Assert.AreEqual(7, timan.Properties.Count);
+            Assert.AreEqual("1960", timan.Properties["yr"]);
+        }
     }
+
 }

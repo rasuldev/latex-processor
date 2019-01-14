@@ -488,5 +488,10 @@ namespace TextProcessor
 
             return sb.ToString();
         }
+
+        public static string ConvertRBibitemsToBibitems(string text)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -512,6 +512,48 @@ namespace TextProcessor.Latex
             //}
         }
 
+        public static List<RBibitem> GetRBibitems(string text, Environment bibEnv)
+        {
+            var rbibitems = new List<RBibitem>();
+            Command cmd;
+            int start = bibEnv.OpeningBlock.EndPos + 1;
+            while ((cmd = FindOneParamCommand(text, "RBibitem", start)) != null)
+            {
+                if (cmd.Block.EndPos > bibEnv.ClosingBlock.StartPos)
+                    break;
+
+                //int endTitlePos = text.IndexOf(@"\bibitem", cmd.Block.EndPos + 1);
+                //if (endTitlePos == -1)
+                //    endTitlePos = text.IndexOf(@"\end", cmd.Block.EndPos + 1);
+                int endRBibitemBlockPos =
+                    FindOneParamCommand(text, "RBibitem", cmd.Block.EndPos + 1)?.Block.StartPos ??
+                    FindOneParamCommand(text, "end", cmd.Block.EndPos + 1).Block.StartPos;
+                string block = text.Substring(cmd.Block.EndPos + 1, endRBibitemBlockPos - cmd.Block.EndPos - 1);
+
+                // extracting props
+                var props = new Dictionary<string, string>();
+                // first line is RBibitem line
+                var lines = block.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+                foreach (var line in lines)
+                {
+                    if (!line.Contains("\\")) continue;
+                    var arr = line.Trim().Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    var propKey = arr[0].Replace("\\", "");
+                    var propVal = arr.Length > 1 ? arr[1] : "";
+                    props.Add(propKey, propVal);
+                }
+
+                rbibitems.Add(new RBibitem(
+                        new TextBlock(text, cmd.Block.StartPos, endRBibitemBlockPos - 1), cmd.Params[0], props));
+
+                start = endRBibitemBlockPos;
+                if (start > bibEnv.ClosingBlock.StartPos)
+                    break;
+            }
+            return rbibitems;
+
+        }
+
         public static List<Cite> GetCites(string text)
         {
             var cites = new List<Cite>();
