@@ -74,7 +74,10 @@ namespace TextProcessor
             //ProcessFile(
             //    @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ 2016\Итоговый отчет\Form503. Report.tex", Encoding.GetEncoding("windows-1251"));
 
-            ConvertRbibToBib(@"e:\Temp\report-bib.txt", Encoding.GetEncoding("windows-1251"));
+            //ConvertRbibToBib(@"e:\Temp\report-bib.txt", Encoding.GetEncoding("windows-1251"));
+
+            //MergeBib(new[] { @"h:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ 2016\Итоговый отчет\Form503. Report (final).tex" }, Encoding.GetEncoding("windows-1251"));
+            ArrangeBiblio(new []{ @"h:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ 2016\Итоговый отчет\Form503. Report (final).tex" }, Encoding.GetEncoding("windows-1251"));
 
             //ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки main — копия.tex", @"D:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки mainEq.tex", Encoding.GetEncoding("windows-1251"));
 
@@ -94,7 +97,7 @@ namespace TextProcessor
             var sources = filenames.Select(f => File.ReadAllText(f, encoding)).ToArray();
             var (bibInd, mod) = CommonProcessor.ArrangeCites(sources);
             File.Copy(filenames[bibInd], GetBakFilename(filenames[bibInd]));
-            File.WriteAllText(filenames[bibInd], mod);
+            File.WriteAllText(filenames[bibInd], mod, encoding);
         }
         private static void ArticlePreProcessing(string filename, string prefix, Encoding encoding = null)
         {
