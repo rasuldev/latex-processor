@@ -65,7 +65,7 @@ namespace TextProcessor
 
             //ConvertRbibToBib(@"h:\Dropbox\Private\Отчет2018\T2\sources\Magomed-KasumovMG.tex", Encoding.GetEncoding("windows-1251"));
 
-            MergeBib(Directory.GetFiles(@"h:\Dropbox\Private\Отчет2018\RepNIR2018\T2\content\", "*.tex"));
+            //MergeBib(Directory.GetFiles(@"h:\Dropbox\Private\Отчет2018\RepNIR2018\T2\content\", "*.tex"));
             //ArrangeBiblio(Directory.GetFiles(@"h:\Dropbox\Private\Отчет2018\RepNIR2018\T2\content\", "*.tex"));
 
             //ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки main — копия.tex", @"D:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки mainEq.tex", Encoding.GetEncoding("windows-1251"));
@@ -77,6 +77,18 @@ namespace TextProcessor
             //var encoding = Encoding.GetEncoding("utf-8");
             //ProcessFile(@"..\..\test.txt", @"..\..\test_processed.txt",encoding);
             //ProcessFile(@"..\..\test_processed.txt", @"..\..\test2.txt", encoding);
+
+            var keys = GetBibitemKeysInRange(@"h:\Dropbox\Private\Отчет2018\RepNIR2018\T2\content\biblio.tex",
+                "Shar11", "SharSMJ2017");
+        }
+
+        private static string GetBibitemKeysInRange(string fileWithBibEnv, string startKey, string endKey, Encoding encoding = null)
+        {
+            if (encoding == null)
+                encoding = new UTF8Encoding();
+            var content = File.ReadAllText(fileWithBibEnv, encoding);
+            var bibitems = Utils.GetBibitemsRange(content, startKey, endKey);
+            return string.Join(",", bibitems.Select(b => b.Key));
         }
 
         private static void ArrangeBiblio(string[] filenames, Encoding encoding = null)

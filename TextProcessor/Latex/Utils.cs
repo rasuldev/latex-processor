@@ -557,6 +557,15 @@ namespace TextProcessor.Latex
 
         }
 
+        public static List<Bibitem> GetBibitemsRange(string text, string startKey, string endKey)
+        {
+            var allBibitems = GetBibitems(text, FindEnv(text, "thebibliography"));
+            var bibitems = allBibitems.SkipWhile(b => b.Key != startKey).TakeWhile(b => b.Key != endKey)
+                .ToList();
+            bibitems.Add(allBibitems.Find(b => b.Key == endKey));
+            return bibitems;
+        }
+
         public static List<Cite> GetCites(string text)
         {
             var cites = new List<Cite>();
