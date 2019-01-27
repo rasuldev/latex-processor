@@ -21,18 +21,7 @@ namespace TextProcessor
             @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section1-rark.tex",
             @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\biblios\biblio1.tex"
         };
-        private static readonly string[] Theme2Files = new[]
-        {
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\intros\intro2.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-common.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-sob.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-sobleg.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-laplas.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section2-equ102.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-ramis.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-charlier.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\biblios\biblio2.tex"
-        };
+
         private static readonly string[] Theme3Files = new[]
         {
             @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\intros\intro3.tex",
@@ -58,7 +47,7 @@ namespace TextProcessor
 
             //ArrangeBiblio(new[] { @"d:\Dropbox\DEMI10_Haar\DEMI10_Haar.tex" }, Encoding.GetEncoding("UTF-8"));
 
-            //ArticlePreProcessing(@"d:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ВНЦ\Отчет 2018\Гост\Исходные данные\РядФурСобЛеж1.tex", "msb2018-", Encoding.GetEncoding("windows-1251"));
+            //ArticlePreProcessing(@"h:\Dropbox\Private\Отчет2018\T2\sources\Magomed-KasumovMG.tex", "walsh-", Encoding.GetEncoding("windows-1251"));
 
             //RenameCitesAndBiblio(@"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-charlier.tex", "charlier-");
 
@@ -74,10 +63,10 @@ namespace TextProcessor
             //ProcessFile(
             //    @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ 2016\Итоговый отчет\Form503. Report.tex", Encoding.GetEncoding("windows-1251"));
 
-            //ConvertRbibToBib(@"e:\Temp\report-bib.txt", Encoding.GetEncoding("windows-1251"));
+            //ConvertRbibToBib(@"h:\Dropbox\Private\Отчет2018\T2\sources\Magomed-KasumovMG.tex", Encoding.GetEncoding("windows-1251"));
 
-            //MergeBib(new[] { @"h:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ 2016\Итоговый отчет\Form503. Report (final).tex" }, Encoding.GetEncoding("windows-1251"));
-            ArrangeBiblio(new []{ @"h:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ 2016\Итоговый отчет\Form503. Report (final).tex" }, Encoding.GetEncoding("windows-1251"));
+            MergeBib(Directory.GetFiles(@"h:\Dropbox\Private\Отчет2018\RepNIR2018\T2\content\", "*.tex"));
+            //ArrangeBiblio(Directory.GetFiles(@"h:\Dropbox\Private\Отчет2018\RepNIR2018\T2\content\", "*.tex"));
 
             //ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки main — копия.tex", @"D:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки mainEq.tex", Encoding.GetEncoding("windows-1251"));
 

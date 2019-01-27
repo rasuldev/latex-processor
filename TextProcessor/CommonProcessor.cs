@@ -347,11 +347,13 @@ namespace TextProcessor
             }
             else
             {
-                essence = bibentry.Substring(0, 60);
+                essence = bibentry.Substring(0, Math.Min(80, bibentry.Length));
             }
 
-            essence = essence.Replace('.', ' ').Replace(',', ' ').Replace("\n", "").Replace("\r", "")
-                .Replace('~', ' ').Replace('{', ' ').Replace('}', ' ');
+            essence = essence.Replace('.', ' ').Replace(',', ' ')
+                .Replace("\n", "").Replace("\r", "")
+                .Replace('~', ' ').Replace('{', ' ')
+                .Replace('}', ' ').Replace('\"',' ');
             var words = essence.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Where(w => w.Length > 3);
             essence = String.Join(" ", words).Trim().ToLower();

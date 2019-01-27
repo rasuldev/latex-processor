@@ -539,6 +539,9 @@ namespace TextProcessor.Latex
                     if (!line.Contains("\\")) continue;
                     var arr = line.Trim().Split(new[] { ' ' }, 2, StringSplitOptions.RemoveEmptyEntries);
                     var propKey = arr[0].Replace("\\", "");
+                    // TODO: it happens when rbibitem contains translated elements, so, for example, jour key may appear twice
+                    if (props.ContainsKey(propKey))
+                        continue;
                     var propVal = arr.Length > 1 ? arr[1] : "";
                     props.Add(propKey, propVal);
                 }

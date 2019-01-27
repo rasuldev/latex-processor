@@ -9,6 +9,7 @@ namespace TextProcessor.Latex
     {
         public TextBlock Block { get; set; }
         public List<string> Keys { get; set; }
+        public string OptionalParam { get; set; }
 
         public Cite(TextBlock block, IEnumerable<string> keys)
         {
@@ -21,6 +22,11 @@ namespace TextProcessor.Latex
             Block = new TextBlock(start, content);
             var keysRaw = Utils.HarvestParams(content, 1, 1).ParamsList[0];
             Keys = keysRaw.Split(',').Select(k => k.Trim()).ToList();
+            // check for optional param
+            if (content.Contains("["))
+            {
+                OptionalParam = content.Split(new[] {'[', ']'})[1];
+            }
         }
 
         public override bool Equals(object obj)
@@ -28,17 +34,18 @@ namespace TextProcessor.Latex
             var another = obj as Cite;
             if (another == null)
                 return false;
-            return Keys.SequenceEqual(another.Keys) && Block.Equals(another.Block);
+            return Keys.SequenceEqual(another.Keys) && Block.Equals(another.Block) && another.OptionalParam == OptionalParam;
         }
 
         public override string ToString()
         {
-            return GenerateMarkup(Keys);
+            return GenerateMarkup(Keys, OptionalParam);
         }
 
-        public static string GenerateMarkup(IEnumerable<string> keys)
+        public static string GenerateMarkup(IEnumerable<string> keys, string optionalParam = null)
         {
-            return @"\cite{" + String.Join(", ", keys) + "}";
+            var optWithBrackets = string.IsNullOrEmpty(optionalParam) ? "" : $"[{optionalParam}]";
+            return $@"\cite{optWithBrackets}{{" + String.Join(", ", keys) + "}";
         }
     }
 }
