@@ -527,6 +527,7 @@ namespace TextProcessor.Latex
                 //    endTitlePos = text.IndexOf(@"\end", cmd.Block.EndPos + 1);
                 int endRBibitemBlockPos =
                     FindOneParamCommand(text, "RBibitem", cmd.Block.EndPos + 1)?.Block.StartPos ??
+                    FindOneParamCommand(text, "bibitem", cmd.Block.EndPos + 1)?.Block.StartPos ??
                     FindOneParamCommand(text, "end", cmd.Block.EndPos + 1).Block.StartPos;
                 string block = text.Substring(cmd.Block.EndPos + 1, endRBibitemBlockPos - cmd.Block.EndPos - 1);
 
