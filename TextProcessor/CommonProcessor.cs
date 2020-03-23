@@ -508,11 +508,11 @@ namespace TextProcessor
                     var volAndIssue = props.Get("vol") + ":" + props.Get("issue");
                     if (volAndIssue.StartsWith(":") || volAndIssue.EndsWith(":"))
                         volAndIssue = volAndIssue.Replace(":", "");
-                    fulltitle += $"\"{props["paper"]}\", {journame}, {volAndIssue} ({props.Get("yr")}), {props.Get("pages")}";
+                    fulltitle += $" \"{props["paper"]}\", {journame}, {volAndIssue} ({props.Get("yr")}), {props.Get("pages")}";
                 }
                 else
                 {
-                    fulltitle += $"{props["book"]}. {props.Get("publ")}, {props.Get("publaddr")}, {props.Get("yr")}, {props.Get("pages")} с.";
+                    fulltitle += $" {props["book"]}. {props.Get("publ")}, {props.Get("publaddr")}, {props.Get("yr")}, {props.Get("pages")} с.";
                 }
 
                 sb.Remove(rbib.Block.StartPos, rbib.Block.Length);
