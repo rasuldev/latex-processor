@@ -26,9 +26,11 @@ namespace TextProcessor
             {
                 if (Utils.IsComment(sb.ToString(), match.Index)) continue;
                 var envName = Utils.GetEnvironmentName(sb.ToString(), match.Index);
-                if (envName.Content.Contains("section") || envName.Content.Contains("lemma")
-                                                        || envName.Content.Contains("theorem"))
-                    continue;
+                
+                if (envName.Content != "equation") continue;
+                //if (envName.Content.Contains("section") || envName.Content.Contains("section*")
+                //    || envName.Content.Contains("lemma") || envName.Content.Contains("theorem"))
+                //    continue;
                 matchList.Add(match);
             }
 
@@ -379,7 +381,8 @@ namespace TextProcessor
             {
                 var source = sources[i];
                 citeKeys.AddRange(Utils.GetCites(source).SelectMany(c => c.Keys));
-                if (source.Contains("thebibliography"))
+                var bibStartPos = source.IndexOf("thebibliography");
+                if (bibStartPos > -1 && !Utils.IsComment(source, bibStartPos))
                 {
                     biblioIndex = i;
                     bibenv = Utils.FindEnv(source, "thebibliography");
