@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
 using System.Runtime.InteropServices;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using TextProcessor.Latex;
@@ -422,6 +423,36 @@ namespace TextProcessor
 
         public static string ArrangeCitesAndRenameToNumbers(string text)
         {
+            var (sb, cites) = ArrangeCitesAndRenameKeysToNumbers(text);
+
+            // change cites
+            foreach (var cite in cites.OrderByDescending(c => c.Block.StartPos))
+            {
+                Utils.RemoveBlock(sb, cite.Block);
+                sb.Insert(cite.Block.StartPos, cite.ToString());
+            }
+
+            return sb.ToString();
+        }
+
+        public static string ArrangeCitesAndReplaceCitesWithNumbers(string text)
+        {
+            var (sb, cites) = ArrangeCitesAndRenameKeysToNumbers(text);
+
+            // change cites
+            foreach (var cite in cites.OrderByDescending(c => c.Block.StartPos))
+            {
+                Utils.RemoveBlock(sb, cite.Block);
+                var citeStr = cite.OptionalParam == null ? $"[{string.Join(", ", cite.Keys)}]" :
+                    $"[{string.Join(", ", cite.Keys)},~{cite.OptionalParam}]";
+                sb.Insert(cite.Block.StartPos, citeStr);
+            }
+
+            return sb.ToString();
+        }
+
+        private static (StringBuilder sb, List<Cite>) ArrangeCitesAndRenameKeysToNumbers(string text)
+        {
             var cites = Utils.GetCites(text);
             var bibenv = Utils.FindEnv(text, "thebibliography");
             var bibitems = Utils.GetBibitems(text, bibenv);
@@ -486,13 +517,8 @@ namespace TextProcessor
             sb.Insert(bibenv.OpeningBlock.EndPos + 1, sbBibInner.ToString());
 
             // change cites
-            foreach (var cite in cites.OrderByDescending(c => c.Block.StartPos))
-            {
-                Utils.RemoveBlock(sb, cite.Block);
-                sb.Insert(cite.Block.StartPos, cite.ToString());
-            }
-
-            return sb.ToString();
+            return (sb, cites);
+            
         }
 
         public static string ConvertRBibitemsToBibitems(string text)

@@ -10,16 +10,22 @@ namespace TextProcessor
 {
     class Program
     {
+        private static string path = @"d:\Downloads\content\";
         private static readonly string[] Theme1Files = new[]
         {
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\intros\intro1.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-jacobi-basis.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-uniform_boundedness_Lpxw.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-lapped-valle.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section1-ramis.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-polyline.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section1-rark.tex",
-            @"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\biblios\biblio1.tex"
+            path+@"biblio.tex",
+            path+@"chaps\akm.tex",
+            path+@"chaps\ark.tex",
+            path+@"chaps\bab.tex",
+            path+@"chaps\grm.tex",
+            path+@"chaps\kri.tex",
+            path+@"chaps\mma.tex",
+            path+@"chaps\mmg.tex",
+            path+@"chaps\msr.tex",
+            path+@"chaps\mzg.tex",
+            path+@"chaps\rmk.tex",
+            path+@"chaps\smm.tex",
+            path+@"chaps\stn.tex"
         };
 
         private static readonly string[] Theme3Files = new[]
@@ -42,12 +48,22 @@ namespace TextProcessor
         };
         static void Main(string[] args)
         {
+            //ProcessVladThesis(@"d:\Dropbox\INFO_BASE_EXT\000 DOC SRW\Rasul\Конференции\Владикавказ 2023\Magomed-KasumovMG.tex");
+            var tex = @"e:\GoogleDriveR\Научная работа\Равномерная сходимость рядов Соболева-Якоби\Статья равн сходимость при положительных показателях\Ультрасферический случай\Оформление СМЖ\Magomed-KasumovMG_2024.tex";
+            ProcessFileForSMZ(tex, Encoding.GetEncoding("windows-1251"));
             // TODO: skip commented lines
             //ArrangeBiblio(new []{ "path-to-tex-file" }, Encoding.GetEncoding("windows-1251"));
 
-            //ArrangeBiblio(new[] { @"d:\Dropbox\DEMI10_Haar\DEMI10_Haar.tex" }, Encoding.GetEncoding("UTF-8"));
+            //MergeBib(new[] { @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\РНФ 2022 2\Форма 4_en.tex" }, Encoding.GetEncoding("utf-8"));
+            //ArrangeBiblio(new []{ @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\РНФ 2022 2\Форма 4_en.tex" }, Encoding.GetEncoding("utf-8"));
+            //MergeBib(new[] { @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\РНФ 2022 2\Форма 4.tex" }, Encoding.GetEncoding("utf-8"));
+            //ArrangeBiblio(new[] { @"e:\GoogleDriveR\Научная работа\Равномерная сходимость рядов Соболева-Якоби\Статья равн сходимость при положительных показателях\Заметки.tex" }, Encoding.GetEncoding("utf-8"));
 
-            //ArticlePreProcessing(@"h:\Dropbox\Private\Отчет2018\T2\sources\Magomed-KasumovMG.tex", "walsh-", Encoding.GetEncoding("windows-1251"));
+            //ArrangeBiblio(new[] { @"e:\GoogleDrive\Научная работа\Равномерная сходимость рядов Соболева-Якоби\Статья равн сходимость при неположительных показателях\UniConvSob.tex" });
+            //, Encoding.GetEncoding("windows-1251"));
+
+            //ArticlePreProcessing(@"d:\Dropbox\INFO_BASE_EXT\000 DOC SRW\Rasul\Планы и отчеты\2021\ГОСТ\GOST.FullReport.tex", "mmg-", Encoding.GetEncoding("utf-8"));
+            //ArrangeBiblio(Theme1Files);
 
             //RenameCitesAndBiblio(@"h:\Dropbox\INFO_BASE\000 Делопроизводство\000 НОР\Планы и отчеты ДНЦ\Отчёты\2017\reportnir2017\chapters\section-charlier.tex", "charlier-");
 
@@ -60,13 +76,12 @@ namespace TextProcessor
             //    @"h:\Dropbox\INFO_BASE_EXT\000 DOC SRW\ИИ\Повторные средние\2\VallePoussenMeans.tex",
             //    Encoding.GetEncoding("windows-1251"));
 
-            //ProcessFile(
-            //    @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ 2016\Итоговый отчет\Form503. Report.tex", Encoding.GetEncoding("windows-1251"));
+            //ProcessFile(@"D:\Downloads\GadzhimirzaevRM.tex", Encoding.GetEncoding("windows-1251"));
 
-            //ConvertRbibToBib(@"h:\Dropbox\Private\Отчет2018\T2\sources\Magomed-KasumovMG.tex", Encoding.GetEncoding("windows-1251"));
+            //ConvertRbibToBib(@"d:\Dropbox\INFO_BASE_EXT\000 DOC SRW\Rasul\Отчеты\2019\bib.txt", Encoding.GetEncoding("windows-1251"));
 
-            //MergeBib(Directory.GetFiles(@"h:\Dropbox\Private\Отчет2018\RepNIR2018\T2\content\", "*.tex"));
-            //ArrangeBiblio(Directory.GetFiles(@"h:\Dropbox\Private\Отчет2018\RepNIR2018\T2\content\", "*.tex"));
+            //MergeBib(new []{@"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ мол_а 2017\2018\Отчет\Форма503 - пункты 3.1-3.5.tex"}, Encoding.GetEncoding("windows-1251"));
+            //ArrangeBiblio(new[] { @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\Проект РФФИ мол_а 2017\2018\Отчет\Форма503 - пункты 3.1-3.5.tex" }, Encoding.GetEncoding("windows-1251"));
 
             //ProcessFile(@"d:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки main — копия.tex", @"D:\Dropbox\INFO_BASE\DOCS\000 DOC SRW\Tadg\Shakh-Emirov\Ограниченность операторов свертки mainEq.tex", Encoding.GetEncoding("windows-1251"));
 
@@ -78,8 +93,8 @@ namespace TextProcessor
             //ProcessFile(@"..\..\test.txt", @"..\..\test_processed.txt",encoding);
             //ProcessFile(@"..\..\test_processed.txt", @"..\..\test2.txt", encoding);
 
-            var keys = GetBibitemKeysInRange(@"h:\Dropbox\Private\Отчет2018\RepNIR2018\T2\content\biblio.tex",
-                "Shar11", "SharSMJ2017");
+            //var keys = GetBibitemKeysInRange(@"h:\Dropbox\Private\Отчет2018\RepNIR2018\T2\content\biblio.tex",
+            //    "Shar11", "SharSMJ2017");
         }
 
         private static string GetBibitemKeysInRange(string fileWithBibEnv, string startKey, string endKey, Encoding encoding = null)
@@ -164,17 +179,18 @@ namespace TextProcessor
             File.WriteAllText(destinationFilename, sb.ToString(), encoding);
         }
 
-        private static void Process2(string sourceFilename, string destinationFilename, Encoding encoding = null)
+        private static void ProcessVladThesis(string sourceFilename, Encoding encoding = null)
         {
+            File.Copy(sourceFilename, GetBakFilename(sourceFilename));
             if (encoding == null)
-                encoding = new UTF8Encoding();
+                encoding = Encoding.GetEncoding("windows-1251");
             var sb = new StringBuilder(File.ReadAllText(sourceFilename, encoding));
 
             // Macroses inlining
-            var macrosDef = @"\newcommand{\norm}[1]{\|#1\|_{p(\cdot),w}}";
-            sb.Replace(macrosDef, "");
-            var macros = new Macros(macrosDef);
-            macros.ApplyMacros(ref sb);
+            //var macrosDef = @"\newcommand{\norm}[1]{\|#1\|_{p(\cdot),w}}";
+            //sb.Replace(macrosDef, "");
+            //var macros = new Macros(macrosDef);
+            //macros.ApplyMacros(ref sb);
 
             // equation labels renaming
             Utils.RenameLabels(ref sb, "mmg_#name#_#num#");
@@ -194,7 +210,7 @@ namespace TextProcessor
             }
 
 
-            File.WriteAllText(destinationFilename, sb.ToString(), encoding);
+            File.WriteAllText(sourceFilename, sb.ToString(), encoding);
         }
 
 
@@ -205,21 +221,27 @@ namespace TextProcessor
         /// </summary>
         /// <param name="sourceFilename">File to be processed</param>
         /// <param name="destinationFilename">Result will be saved in this file</param>
-        static void ProcessFile(string sourceFilename, Encoding encoding = null)
+        static void ProcessFileForSMZ(string sourceFilename, Encoding encoding = null)
         {
-            string destinationFilename = Path.Combine(
-                Path.GetDirectoryName(sourceFilename),
-                Path.GetFileNameWithoutExtension(sourceFilename) + "_processed" +
-                Path.GetExtension(sourceFilename));
+            File.Copy(sourceFilename, GetBakFilename(sourceFilename));
             if (encoding == null)
                 encoding = new UTF8Encoding();
             var source = File.ReadAllText(sourceFilename, encoding);
-            var text = CommonProcessor.MakeEquationWithLabelsFromDollars(source, "eq");
-            //var text = CommonProcessor.MakeDollarsFromEquationWithLabels(source);
+            //var text = CommonProcessor.MakeEquationWithLabelsFromDollars(source, "eq");
+            source = CommonProcessor.MakeDollarsFromEquationWithLabels(source);
+            source = CommonProcessor.ArrangeCitesAndReplaceCitesWithNumbers(source);
+
+            var sb = new StringBuilder(source);
+            Utils.RenameEnvs(ref sb, "lemma", "\r\n\r\n" + @"\textbf{Лемма #counter#.}\textit{", "}\r\n\r\n");
+            Utils.RenameEnvs(ref sb, "theorem", "\r\n\r\n" + @"\textbf{Теорема #counter#.}\textit{", "}\r\n\r\n");
+            Utils.RenameEnvs(ref sb, "theoremA", "\r\n\r\n" + @"\textbf{Теорема #counter#.}\textit{", "}\r\n\r\n", i => new[] { "A", "B", "C", "D", "E" }[i - 1]);
+            Utils.RenameEnvs(ref sb, "statement", "\r\n\r\n" + @"\textbf{Утверждение #counter#.}\textit{", "}\r\n\r\n");
+
+            
             //var text = CommonProcessor.ArrangeCites(source);
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Замечание (\d*).*}", "%e", "замечани", "remark", n => "kad-ito:"+n);
             //var text = CommonProcessor.WrapInEnvironment(source, @"\\textbf{Определение ((\d|\.)*).*?}", "%e", "определени", "definition", n => "sirazh2:" + n);
-            File.WriteAllText(destinationFilename, text, encoding);
+            File.WriteAllText(sourceFilename, sb.ToString(), encoding);
         }
 
         private static void ConvertRbibToBib(string filename, Encoding encoding = null)
