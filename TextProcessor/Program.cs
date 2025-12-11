@@ -48,14 +48,14 @@ namespace TextProcessor
         };
         static void Main(string[] args)
         {
-            //ProcessVladThesis(@"d:\Dropbox\INFO_BASE_EXT\000 DOC SRW\Rasul\Конференции\Владикавказ 2023\Magomed-KasumovMG.tex");
-            var tex = @"e:\GoogleDriveR\Научная работа\Равномерная сходимость рядов Соболева-Якоби\Статья равн сходимость при положительных показателях\Ультрасферический случай\Оформление СМЖ\Magomed-KasumovMG_2024.tex";
-            ProcessFileForSMZ(tex, Encoding.GetEncoding("windows-1251"));
+            //ProcessVladThesis(@"c:\Users\Admin\Dropbox\INFO_BASE_EXT\000 DOC SRW\Rasul\Конференции\Владикавказ 2025\Magomed-KasumovMG_OTDE_2025.tex");
+            //var tex = @"c:\Users\Admin\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\РНФ 2023\rosrid\Форма 4t.tex";
+            //ProcessFileForSMZ(tex, Encoding.GetEncoding("utf-8"));
             // TODO: skip commented lines
             //ArrangeBiblio(new []{ "path-to-tex-file" }, Encoding.GetEncoding("windows-1251"));
 
-            //MergeBib(new[] { @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\РНФ 2022 2\Форма 4_en.tex" }, Encoding.GetEncoding("utf-8"));
-            //ArrangeBiblio(new []{ @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\РНФ 2022 2\Форма 4_en.tex" }, Encoding.GetEncoding("utf-8"));
+            MergeBib(new[] { @"c:\Users\Admin\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\РНФ 2025\Форма 4.tex" }, Encoding.GetEncoding("utf-8"));
+            ArrangeBiblio(new[] { @"c:\Users\Admin\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\РНФ 2025\Форма 4.tex" }, Encoding.GetEncoding("utf-8"));
             //MergeBib(new[] { @"d:\Dropbox\INFO_BASE\000 Делопроизводство\001 Grants\РНФ 2022 2\Форма 4.tex" }, Encoding.GetEncoding("utf-8"));
             //ArrangeBiblio(new[] { @"e:\GoogleDriveR\Научная работа\Равномерная сходимость рядов Соболева-Якоби\Статья равн сходимость при положительных показателях\Заметки.tex" }, Encoding.GetEncoding("utf-8"));
 
@@ -202,12 +202,12 @@ namespace TextProcessor
 
             // remove block "My notations"
 
-            var lineStart = Utils.FindLine(sb.ToString(), "===My notations");
-            var lineEnd = Utils.FindLine(sb.ToString(), "===/My notations");
-            for (int i = lineEnd; i >= lineStart; i--)
-            {
-                Utils.RemoveLine(sb, i);
-            }
+            //var lineStart = Utils.FindLine(sb.ToString(), "===My notations");
+            //var lineEnd = Utils.FindLine(sb.ToString(), "===/My notations");
+            //for (int i = lineEnd; i >= lineStart; i--)
+           // {
+            //    Utils.RemoveLine(sb, i);
+            //}
 
 
             File.WriteAllText(sourceFilename, sb.ToString(), encoding);

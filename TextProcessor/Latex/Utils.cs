@@ -49,6 +49,7 @@ namespace TextProcessor.Latex
                 }
                 else
                 {
+                    if (!stacks.Any()) continue;
                     var envStartBound = stacks.Pop();
                     var env = new Environment(
                         envStartBound.Start, text.Substring(envStartBound.Start, envStartBound.End - envStartBound.Start + 1),
